@@ -98,6 +98,7 @@ docker exec -it spark-iceberg spark-sql \
 SHOW CATALOGS;
 -- Use the hadoop catalog
 USE myhadoop;
+SELECT current_catalog();
 -- Create database
 CREATE DATABASE IF NOT EXISTS oracle_cdc_db;
 -- Use database
