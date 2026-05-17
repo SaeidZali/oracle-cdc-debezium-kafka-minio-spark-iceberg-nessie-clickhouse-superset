@@ -5,7 +5,7 @@ services:
     image: container-registry.oracle.com/database/enterprise:19.3.0.0
     container_name: dbz_oracle19
     ports:
-      - "1522:1522"
+      - "1522:1521"
     environment:
       ORACLE_SID: ORCLCDB
       ORACLE_PDB: ORCLPDB1
