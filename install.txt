@@ -103,9 +103,7 @@ CREATE DATABASE IF NOT EXISTS oracle_cdc_db;
 -- Use database
 USE oracle_cdc_db;
 -- Create Iceberg table from Parquet files
-CREATE TABLE customers USING iceberg AS SELECT after.ID as id,
-  after.NAME as name
-FROM parquet.`s3a://oracle-cdc/topics/server1.C__DBZUSER.CUSTOMERS`;
+CREATE TABLE customers USING iceberg AS SELECT after.ID as id,after.NAME as name FROM parquet.`s3a://oracle-cdc/topics/server1.C__DBZUSER.CUSTOMERS`;
 
 -- Query the table
 SELECT * FROM customers;
