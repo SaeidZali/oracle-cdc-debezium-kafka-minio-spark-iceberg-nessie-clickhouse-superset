@@ -1,4 +1,5 @@
 https://debezium.io/blog/2022/09/30/debezium-oracle-series-part-1/
+cd oracle-cdc-debezium-kafka-minio-spark-iceberg/
 rm -rf oradata
 mkdir -p oradata
 mkdir -p miniodata
