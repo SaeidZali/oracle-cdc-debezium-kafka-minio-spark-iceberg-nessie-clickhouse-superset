@@ -75,6 +75,7 @@ curl --noproxy '*' -i -X POST \
   http://localhost:8083/connectors \
   -d @s3-sink.json
 for creating topics you must reach flush size 
+create bucket of oracle-cdc in localhost:9001
 docker exec -it connect kafka-avro-console-consumer \
   --bootstrap-server kafka:9092 \
   --topic server1.C__DBZUSER.CUSTOMERS \
