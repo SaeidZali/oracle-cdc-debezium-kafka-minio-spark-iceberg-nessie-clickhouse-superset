@@ -96,22 +96,14 @@ docker exec -it spark-iceberg spark-sql \
   --conf spark.hadoop.fs.s3a.path.style.access=true
 -- Show catalogs (myhadoop should appear)
 SHOW CATALOGS;
-
 -- Use the hadoop catalog
 USE myhadoop;
-
 -- Create database
 CREATE DATABASE IF NOT EXISTS oracle_cdc_db;
-
 -- Use database
 USE oracle_cdc_db;
-
 -- Create Iceberg table from Parquet files
-CREATE TABLE customers
-USING iceberg
-AS
-SELECT 
-  after.ID as id,
+CREATE TABLE customers USING iceberg AS SELECT after.ID as id,
   after.NAME as name
 FROM parquet.`s3a://oracle-cdc/topics/server1.C__DBZUSER.CUSTOMERS`;
 
