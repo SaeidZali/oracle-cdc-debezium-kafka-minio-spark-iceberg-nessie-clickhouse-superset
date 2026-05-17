@@ -61,6 +61,7 @@ INSERT INTO customers VALUES (1003, 'Edward Walker');
 INSERT INTO customers VALUES (1004, 'Anne Kretchmar');
 COMMIT;
 ALTER TABLE customers ADD SUPPLEMENTAL LOG DATA (ALL) COLUMNS;
+exit
 docker exec connect curl -s http://localhost:8083/connectors | jq
 curl --noproxy localhost,127.0.0.1 -i -X POST \
   -H "Accept:application/json" \
