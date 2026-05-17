@@ -71,6 +71,7 @@ docker exec -it connect kafka-avro-console-consumer \
   --from-beginning \
   --property print.key=true \
   --property schema.registry.url=http://schema-registry:8081
+-----------------------------------------------
 curl --noproxy localhost,127.0.0.1 -i -X POST \
   -H "Accept:application/json" \
   -H "Content-Type:application/json" \
@@ -82,6 +83,7 @@ curl --noproxy '*' -i -X POST \
   -H "Content-Type:application/json" \
   http://localhost:8083/connectors \
   -d @s3-sink.json
+-----------------------------------------------
 docker exec spark-iceberg aws --endpoint-url http://minio:9000 s3 ls s3://oracle-cdc/
 # Restart Spark with Hadoop catalog instead of Hive catalog
 docker exec -it spark-iceberg spark-sql \
