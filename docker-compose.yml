@@ -90,7 +90,7 @@ services:
       MINIO_ROOT_PASSWORD: minioadmin
     command: server /data --console-address ":9001"
     volumes:
-      - ./minio-data:/data
+      - ./miniodata:/data
     networks:
       - debezium-net
     healthcheck:
