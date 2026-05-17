@@ -23,6 +23,7 @@ CREATE TABLESPACE logminer_tbs DATAFILE '/opt/oracle/oradata/ORCLCDB/logminer_tb
 alter session set container=ORCLPDB1;
 CREATE TABLESPACE logminer_tbs DATAFILE '/opt/oracle/oradata/ORCLCDB/ORCLPDB1/logminer_tbs.dbf' SIZE 25M REUSE AUTOEXTEND ON MAXSIZE UNLIMITED;
 docker container exec -it -e ORACLE_SID=ORCLCDB dbz_oracle19 sqlplus sys as sysdba
+exit
 CREATE USER c##dbzuser IDENTIFIED BY dbz DEFAULT TABLESPACE LOGMINER_TBS QUOTA UNLIMITED ON LOGMINER_TBS CONTAINER=ALL;
 GRANT CREATE SESSION TO c##dbzuser CONTAINER=ALL;
 GRANT SET CONTAINER TO c##dbzuser CONTAINER=ALL;
@@ -51,6 +52,7 @@ GRANT SELECT ON V_$LOGFILE TO c##dbzuser CONTAINER=ALL;
 GRANT SELECT ON V_$ARCHIVED_LOG TO c##dbzuser CONTAINER=ALL;
 GRANT SELECT ON V_$ARCHIVE_DEST_STATUS TO c##dbzuser CONTAINER=ALL;
 GRANT SELECT ON V_$TRANSACTION TO c##dbzuser CONTAINER=ALL;
+exit
 docker exec -it -e ORACLE_SID=ORCLPDB1 dbz_oracle19 sqlplus c##dbzuser@ORCLPDB1;
 CREATE TABLE customers (id number(9,0) primary key, name varchar2(50));
 INSERT INTO customers VALUES (1001, 'Salles Thomas');
