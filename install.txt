@@ -12,8 +12,8 @@ docker container logs -f dbz_oracle19
 docker container exec -it -e ORACLE_SID=ORCLCDB dbz_oracle19 sqlplus sys as sysdba or in plsql developer 91.107.254.54:1522/ORCLCDB
 ALTER SYSTEM SET db_recovery_file_dest_size = 10G;
 ALTER SYSTEM SET db_recovery_file_dest = '/opt/oracle/oradata/ORCLCDB' scope=spfile;
-SHUTDOWN IMMEDIATE cannot exec in plsql developer
-STARTUP MOUNT cannot exec in plsql developer
+SHUTDOWN IMMEDIATE
+STARTUP MOUNT
 ALTER DATABASE ARCHIVELOG; 
 ALTER DATABASE OPEN;
 ARCHIVE LOG LIST;
