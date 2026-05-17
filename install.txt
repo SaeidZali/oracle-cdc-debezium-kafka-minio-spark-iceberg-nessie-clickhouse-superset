@@ -1,8 +1,8 @@
 https://debezium.io/blog/2022/09/30/debezium-oracle-series-part-1/
 rm -rf oradata
 mkdir -p oradata
-mkdir -p minio-data
-chmod 777 minio-data
+mkdir -p miniodata
+chmod 777 miniodata
 chmod 777 for creating directories of oradata
 docker container exec -it -e ORACLE_SID=ORCLCDB dbz_oracle19 sqlplus sys as sysdba
 ALTER SYSTEM SET db_recovery_file_dest_size = 10G;
