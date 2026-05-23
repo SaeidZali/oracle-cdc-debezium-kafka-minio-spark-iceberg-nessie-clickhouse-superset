@@ -22,6 +22,7 @@
 
     "schema.compatibility": "NONE",
     "partitioner.class": "io.confluent.connect.storage.partitioner.DefaultPartitioner",
-    "flush.size": "1"
+    "flush.size": "1",
+    "behavior.on.null.values": "ignore"
   }
 }
