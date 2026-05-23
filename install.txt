@@ -87,17 +87,14 @@ curl --noproxy '*' -i -X POST \
 docker exec spark-iceberg aws --endpoint-url http://minio:9000 s3 ls s3://oracle-cdc/
 # Restart Spark with Hadoop catalog instead of Hive catalog
 docker exec -it spark-iceberg spark-sql \
-  --conf spark.sql.catalog.myhadoop=org.apache.iceberg.spark.SparkCatalog \
-  --conf spark.sql.catalog.myhadoop.type=hadoop \
-  --conf spark.sql.catalog.myhadoop.warehouse=s3a://oracle-cdc/iceberg \
-  --conf spark.hadoop.fs.s3a.endpoint=http://minio:9000 \
-  --conf spark.hadoop.fs.s3a.access.key=minioadmin \
-  --conf spark.hadoop.fs.s3a.secret.key=minioadmin \
-  --conf spark.hadoop.fs.s3a.path.style.access=true
+--conf spark.sql.catalog.demo=org.apache.iceberg.spark.SparkCatalog \
+--conf spark.sql.catalog.demo.uri=http://nessie:19120/iceberg/ \
+--conf spark.sql.catalog.demo.warehouse=s3://oracle-cdc/ \
+--conf spark.sql.catalog.demo.type=rest
 -- Show catalogs (myhadoop should appear)
 SHOW CATALOGS;
 -- Use the hadoop catalog
-USE myhadoop;
+USE demo;
 SELECT current_catalog();
 -- Create database
 CREATE DATABASE IF NOT EXISTS oracle_cdc_db;
