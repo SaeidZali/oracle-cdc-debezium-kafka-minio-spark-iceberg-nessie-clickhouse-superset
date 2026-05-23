@@ -88,6 +88,7 @@ services:
     environment:
       MINIO_ROOT_USER: minioadmin
       MINIO_ROOT_PASSWORD: minioadmin
+      MINIO_REGION: us-east-1
     command: server /data --console-address ":9001"
     volumes:
       - ./miniodata:/data
@@ -118,7 +119,7 @@ services:
       - debezium-net
     depends_on:
       - minio
-      - rest
+      - nessie
     volumes:
       - ./warehouse:/home/iceberg/warehouse
       - ./notebooks:/home/iceberg/notebooks/notebooks
@@ -132,14 +133,24 @@ services:
       - 8080:8080
       - 10000:10000
       - 10001:10001
-  rest:
-    image: apache/iceberg-rest-fixture
-    container_name: rest
+  nessie:
+    image: ghcr.io/projectnessie/nessie:0.104.1
+    container_name: nessie
     networks:
       - debezium-net
     ports:
-      - 8181:8181
+      - 19120:19120
     environment:
+      - nessie.version.store.type=IN_MEMORY
+      - nessie.catalog.default-warehouse=warehouse
+      - nessie.catalog.warehouses.warehouse.location=s3://oracle-cdc
+      - nessie.catalog.service.s3.default-options.region=us-east-1
+      - nessie.catalog.service.s3.default-options.endpoint=http://minio:9000/
+      - nessie.catalog.service.s3.default-options.path-style-access=true
+      - nessie.catalog.service.s3.default-options.access-key=urn:nessie-secret:quarkus:nessie.catalog.secrets.access-key
+      - nessie.catalog.secrets.access-key.name=minioadmin
+      - nessie.catalog.secrets.access-key.secret=minioadmin
+      - nessie.server.authentication.enabled=false
       - AWS_ACCESS_KEY_ID=minioadmin
       - AWS_SECRET_ACCESS_KEY=minioadmin
       - AWS_REGION=us-east-1
@@ -161,4 +172,3 @@ services:
 networks:
   debezium-net:
     driver: bridge
-
