@@ -128,8 +128,6 @@ services:
       KAFKA_CLUSTERS_0_SCHEMAREGISTRY: "http://schema-registry:8081"
       KAFKA_CLUSTERS_0_KAFKACONNECT_0_NAME: "kafka-connect"
       KAFKA_CLUSTERS_0_KAFKACONNECT_0_ADDRESS: "http://connect:8083"
-    volumes:
-      - ~/kui/config.yml:/etc/kafkaui/dynamic_config.yaml
     networks:
       - debezium-net
   spark-iceberg:
