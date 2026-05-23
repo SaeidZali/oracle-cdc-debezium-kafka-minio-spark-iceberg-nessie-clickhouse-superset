@@ -93,7 +93,7 @@ docker exec -it spark-iceberg spark-sql \
 --conf spark.sql.catalog.demo.type=rest
 -- Show catalogs (myhadoop should appear)
 SHOW CATALOGS;
--- Use the hadoop catalog
+-- Use the nessie catalog
 USE demo;
 SELECT current_catalog();
 -- Create database
