@@ -85,6 +85,7 @@ curl --noproxy '*' -i -X POST \
   -d @s3-sink.json
 -----------------------------------------------
 docker exec spark-iceberg aws --endpoint-url http://minio:9000 s3 ls s3://oracle-cdc/
+------------------------------------------------------------------------------------
 # Restart Spark with Hadoop catalog instead of Hive catalog
 docker exec -it spark-iceberg spark-sql \
 --conf spark.sql.catalog.demo=org.apache.iceberg.spark.SparkCatalog \
@@ -106,6 +107,71 @@ CREATE TABLE customers USING iceberg AS SELECT after.ID as id,after.NAME as name
 SELECT * FROM customers;
 after each delete in customers table then do this 
 WITH all_records AS ( SELECT COALESCE(after.ID, before.ID) as id, COALESCE(after.NAME, before.NAME) as name, op, ts_ms, ROW_NUMBER() OVER (PARTITION BY COALESCE(after.ID, before.ID) ORDER BY ts_ms DESC) as rn FROM parquet.`s3a://oracle-cdc/topics/server1.C__DBZUSER.CUSTOMERS` WHERE COALESCE(after.ID, before.ID) IS NOT NULL ) SELECT id, name FROM all_records WHERE rn = 1 AND op != 'd';
+------------------------------------------------------------------------------------
+in localhost:8888 new python3 (ipykernel)
+from pyspark.sql import SparkSession
+# Create Spark session with Iceberg catalog configuration
+spark = SparkSession.builder \
+    .appName("Oracle CDC to Iceberg") \
+    .config("spark.sql.catalog.demo", "org.apache.iceberg.spark.SparkCatalog") \
+    .config("spark.sql.catalog.demo.uri", "http://nessie:19120/iceberg/") \
+    .config("spark.sql.catalog.demo.warehouse", "s3://oracle-cdc/") \
+    .config("spark.sql.catalog.demo.type", "rest") \
+    .getOrCreate()
+# Show catalogs (demo should appear)
+print("=== Available Catalogs ===")
+spark.sql("SHOW CATALOGS").show()
+# Use the demo catalog
+spark.sql("USE demo")
+# Show current catalog
+print("=== Current Catalog ===")
+spark.sql("SELECT current_catalog()").show()
+# Create database if not exists
+spark.sql("CREATE DATABASE IF NOT EXISTS oracle_cdc_db")
+# Use the database
+spark.sql("USE oracle_cdc_db")
+# Create Iceberg table from Parquet files
+# This reads CDC data and extracts the 'after' struct fields
+spark.sql("""
+    CREATE TABLE IF NOT EXISTS customers 
+    USING iceberg 
+    AS SELECT 
+        after.ID as id,
+        after.NAME as name 
+    FROM parquet.`s3a://oracle-cdc/topics/server1.C__DBZUSER.CUSTOMERS`
+""")
+# Alternative: Using DataFrame API
+print("=== Using DataFrame API ===")
+# Read parquet files directly
+df_parquet = spark.read.parquet("s3a://oracle-cdc/topics/server1.C__DBZUSER.CUSTOMERS")
+# Extract fields from 'after' struct
+df_customers = df_parquet.select(
+    df_parquet["after.ID"].alias("id"),
+    df_parquet["after.NAME"].alias("name")
+)
+# Show the data
+df_customers.show()
+# Write as Iceberg table (alternative method)
+# df_customers.writeTo("demo.oracle_cdc_db.customers").createOrReplace()
+df = spark.sql("""
+    WITH all_records AS (
+        SELECT 
+            COALESCE(after.ID, before.ID) as id,
+            COALESCE(after.NAME, before.NAME) as name,
+            op,
+            ts_ms,
+            ROW_NUMBER() OVER (PARTITION BY COALESCE(after.ID, before.ID) ORDER BY ts_ms DESC) as rn
+        FROM parquet.`s3a://oracle-cdc/topics/server1.C__DBZUSER.CUSTOMERS`
+        WHERE COALESCE(after.ID, before.ID) IS NOT NULL
+    )
+    SELECT id, name
+    FROM all_records
+    WHERE rn = 1 AND op != 'd'
+""")
+df.show()
+# Stop Spark session
+spark.stop()
+------------------------------------------------------------------------------------
 http://91.107.254.54:8123/play default clickhouse123
 SET allow_experimental_database_iceberg = 1;
 SELECT * FROM iceberg('http://minio:9000/oracle-cdc/oracle_cdc_db/customers_74e3e89e-032c-49e5-a790-66e51e719b40', access_key_id = 'minioadmin', secret_access_key = 'minioadmin') LIMIT 10;
