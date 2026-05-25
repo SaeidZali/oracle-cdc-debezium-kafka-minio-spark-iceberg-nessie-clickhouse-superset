@@ -209,11 +209,6 @@ services:
         hard: 262144
     networks:
       - debezium-net
-    healthcheck:
-      test: ["CMD", "clickhouse-client", "--query", "SELECT 1"]
-      interval: 5s
-      timeout: 3s
-      retries: 10
   superset:
     image: apache/superset:latest
     container_name: superset
