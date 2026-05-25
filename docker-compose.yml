@@ -9,6 +9,8 @@ services:
     environment:
       ORACLE_SID: ORCLCDB
       ORACLE_PDB: ORCLPDB1
+      INIT_SGA_SIZE: 3000  # Sets SGA to 3GB (in MB)
+      INIT_PGA_SIZE: 1000  # Sets PGA to 1GB (in MB)
       ORACLE_PWD: oraclepw
     volumes:
       - ./oradata:/opt/oracle/oradata
