@@ -11,7 +11,7 @@ docker compose up -d
 docker container logs -f dbz_oracle19
 docker container exec -it -e ORACLE_SID=ORCLCDB FREE dbz_oracle19 sqlplus sys as sysdba
 ALTER SYSTEM SET db_recovery_file_dest_size = 10G;
-ALTER SYSTEM SET db_recovery_file_dest = '/opt/oracle/oradata/ORCLCDB' scope=spfile;
+ALTER SYSTEM SET db_recovery_file_dest = '/opt/oracle/oradata/ORCLCDB FREE' scope=spfile;
 SHUTDOWN IMMEDIATE
 STARTUP MOUNT
 ALTER DATABASE ARCHIVELOG; 
@@ -19,11 +19,11 @@ ALTER DATABASE OPEN;
 ARCHIVE LOG LIST;
 add redo log files
 ALTER DATABASE ADD SUPPLEMENTAL LOG DATA;
-CREATE TABLESPACE logminer_tbs DATAFILE '/opt/oracle/oradata/ORCLCDB/logminer_tbs.dbf' SIZE 25M REUSE AUTOEXTEND ON MAXSIZE UNLIMITED;
+CREATE TABLESPACE logminer_tbs DATAFILE '/opt/oracle/oradata/ORCLCDB FREE/logminer_tbs.dbf' SIZE 25M REUSE AUTOEXTEND ON MAXSIZE UNLIMITED;
 alter session set container=ORCLPDB1;
-CREATE TABLESPACE logminer_tbs DATAFILE '/opt/oracle/oradata/ORCLCDB/ORCLPDB1/logminer_tbs.dbf' SIZE 25M REUSE AUTOEXTEND ON MAXSIZE UNLIMITED;
+CREATE TABLESPACE logminer_tbs DATAFILE '/opt/oracle/oradata/ORCLCDB FREE/ORCLPDB1/logminer_tbs.dbf' SIZE 25M REUSE AUTOEXTEND ON MAXSIZE UNLIMITED;
 exit
-docker container exec -it -e ORACLE_SID=ORCLCDB dbz_oracle19 sqlplus sys as sysdba
+docker container exec -it -e ORACLE_SID=ORCLCDB FREE dbz_oracle19 sqlplus sys as sysdba
 CREATE USER c##dbzuser IDENTIFIED BY dbz DEFAULT TABLESPACE LOGMINER_TBS QUOTA UNLIMITED ON LOGMINER_TBS CONTAINER=ALL;
 GRANT CREATE SESSION TO c##dbzuser CONTAINER=ALL;
 GRANT SET CONTAINER TO c##dbzuser CONTAINER=ALL;
