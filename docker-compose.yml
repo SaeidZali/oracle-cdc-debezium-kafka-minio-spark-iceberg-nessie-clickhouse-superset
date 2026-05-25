@@ -209,6 +209,32 @@ services:
         hard: 262144
     networks:
       - debezium-net
+    healthcheck:
+      test: ["CMD", "clickhouse-client", "--query", "SELECT 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+  superset:
+    image: apache/superset:latest
+    container_name: superset
+    ports:
+      - "8088:8088"
+    environment:
+      SUPERSET_SECRET_KEY: "change_this_secret_key"
+      PYTHONPATH: "/app/superset_home/.local/lib/python3.10/site-packages"
+    depends_on:
+      clickhouse:
+        condition: service_healthy  # Wait for healthy, not just started
+    networks:
+      - debezium-net
+    command: >
+      /bin/bash -c "
+      pip install clickhouse-connect clickhouse-sqlalchemy &&
+      superset db upgrade &&
+      superset fab create-admin --username admin --firstname admin --lastname user --email admin@local.com --password admin &&
+      superset init &&
+      superset run -h 0.0.0.0 -p 8088
+      "
 
 networks:
   debezium-net:
