@@ -113,3 +113,4 @@ http://91.107.254.54:8123/play default clickhouse123
 SET allow_experimental_database_iceberg = 1;
 SELECT * FROM iceberg('http://minio:9000/oracle-cdc/oracle_cdc_db/customers_74e3e89e-032c-49e5-a790-66e51e719b40', access_key_id = 'minioadmin', secret_access_key = 'minioadmin') LIMIT 10;
 CREATE TABLE customers_table ENGINE = Iceberg('http://minio:9000/oracle-cdc/oracle_cdc_db/customers_74e3e89e-032c-49e5-a790-66e51e719b40', access_key_id = 'minioadmin', secret_access_key = 'minioadmin');
+in localhost:8080 in superset connect to clickhouse
