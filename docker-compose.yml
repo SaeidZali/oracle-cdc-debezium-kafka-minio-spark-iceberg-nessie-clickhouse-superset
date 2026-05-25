@@ -213,7 +213,7 @@ services:
     image: apache/superset:latest
     container_name: superset
     ports:
-      - "8089:8088"
+      - "8088:8088"
     environment:
       SUPERSET_SECRET_KEY: "change_this_secret_key"
       PYTHONPATH: "/app/superset_home/.local/lib/python3.10/site-packages"
