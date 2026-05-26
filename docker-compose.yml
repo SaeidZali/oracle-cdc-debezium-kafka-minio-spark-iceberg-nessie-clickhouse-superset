@@ -242,7 +242,7 @@ services:
       - "8088:8088"
     environment:
       SUPERSET_SECRET_KEY: "change_this_secret_key_to_something_secure"
-	  PYTHONPATH: "/app/superset_home/.local/lib/python3.10/site-packages"
+      PYTHONPATH: "/app/superset_home/.local/lib/python3.10/site-packages"
     depends_on:
       - clickhouse
     networks:
@@ -250,8 +250,8 @@ services:
     volumes:
       - ./:/app/superset_home
     command: >
-      sh -c "										
-      pip install clickhouse-connect &&												  
+      sh -c "
+      pip install clickhouse-connect &&
       superset fab create-admin --username admin --firstname Admin --lastname User --email admin@superset.com --password admin || true &&
       superset db upgrade &&
       superset init &&
