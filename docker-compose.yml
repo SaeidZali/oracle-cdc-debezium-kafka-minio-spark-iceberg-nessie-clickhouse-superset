@@ -221,6 +221,8 @@ services:
       - clickhouse
     networks:
       - debezium-net
+    volumes:
+      - ./:/app/superset_home
     command: >
       sh -c "
       pip install --user 'sqlalchemy==1.3.24' &&
