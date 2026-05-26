@@ -207,14 +207,10 @@ services:
     container_name: mc
     networks:
       - debezium-net
-    entrypoint: >
-      /bin/sh -c "
-      until (/usr/bin/mc config host add minio http://minio:9000 minioadmin minioadmin) do echo 'Waiting for minio...' && sleep 1; done;
-      /usr/bin/mc mb minio/warehouse;
-      /usr/bin/mc policy set download minio/warehouse;
-      echo 'MinIO bucket created';
-      tail -f /dev/null
-      "
+    environment:
+      - AWS_ACCESS_KEY_ID=minioadmin
+      - AWS_SECRET_ACCESS_KEY=minioadmin
+      - AWS_REGION=us-east-1
     restart: unless-stopped
 
   clickhouse:
@@ -246,14 +242,16 @@ services:
       - "8088:8088"
     environment:
       SUPERSET_SECRET_KEY: "change_this_secret_key_to_something_secure"
+	  PYTHONPATH: "/app/superset_home/.local/lib/python3.10/site-packages"
     depends_on:
       - clickhouse
     networks:
       - debezium-net
-    user: root
+    volumes:
+      - ./:/app/superset_home
     command: >
-      sh -c "
-      pip install clickhouse-connect &&
+      sh -c "										
+      pip install clickhouse-connect &&												  
       superset fab create-admin --username admin --firstname Admin --lastname User --email admin@superset.com --password admin || true &&
       superset db upgrade &&
       superset init &&
