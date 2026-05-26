@@ -99,7 +99,7 @@ docker exec -it spark-iceberg spark-sql
 -- Show catalogs (myhadoop should appear)
 SHOW CATALOGS;
 -- Use the nessie catalog
-USE demo;
+USE nessie;
 SELECT current_catalog();
 -- Create database
 CREATE DATABASE IF NOT EXISTS oracle_cdc_db;
