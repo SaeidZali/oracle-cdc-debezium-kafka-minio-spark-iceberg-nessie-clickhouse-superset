@@ -96,7 +96,6 @@ curl --noproxy '*' -i -X POST \
 docker exec spark-iceberg aws --endpoint-url http://minio:9000 s3 ls s3://oracle-cdc/
 ------------------------------------------------------------------------------------
 docker exec -it spark-iceberg spark-sql
--- Show catalogs (myhadoop should appear)
 SHOW CATALOGS;
 -- Use the nessie catalog
 USE nessie;
