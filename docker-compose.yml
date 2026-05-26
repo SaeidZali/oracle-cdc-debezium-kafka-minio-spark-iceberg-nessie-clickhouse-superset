@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   oracle:
     image: container-registry.oracle.com/database/enterprise:19.3.0.0
@@ -9,8 +7,8 @@ services:
     environment:
       ORACLE_SID: ORCLCDB
       ORACLE_PDB: ORCLPDB1
-      INIT_SGA_SIZE: 3000  # Sets SGA to 3GB (in MB)
-      INIT_PGA_SIZE: 1000  # Sets PGA to 1GB (in MB)
+      INIT_SGA_SIZE: 3000
+      INIT_PGA_SIZE: 1000
       ORACLE_PWD: oraclepw
     volumes:
       - ./oradata:/opt/oracle/oradata
@@ -26,6 +24,14 @@ services:
       - "3888:3888"
     networks:
       - debezium-net
+    volumes:
+      - ./data/zookeeper/data:/zookeeper/data
+      - ./data/zookeeper/txns:/zookeeper/txns
+    environment:
+      - ZOOKEEPER_TICK_TIME=2000
+      - ZOOKEEPER_INIT_LIMIT=10
+      - ZOOKEEPER_SYNC_LIMIT=5
+    restart: unless-stopped
 
   kafka:
     image: confluentinc/cp-kafka:7.7.7
@@ -36,13 +42,20 @@ services:
       - zookeeper
     environment:
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_ZOOKEEPER_CONNECTION_TIMEOUT_MS: 180000
       KAFKA_BROKER_ID: 1
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1       # important for single broker
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
     networks:
       - debezium-net
+    volumes:
+      - ./data/kafka:/var/lib/kafka/data
+    restart: unless-stopped
 
   connect:
     image: confluentinc/cp-kafka-connect:7.7.7
@@ -55,14 +68,13 @@ services:
       - oracle
       - minio
     environment:
-      # Kafka Connect Basics
       CONNECT_BOOTSTRAP_SERVERS: kafka:9092
       CONNECT_GROUP_ID: "1"
       CONNECT_CONFIG_STORAGE_TOPIC: my_connect_configs
       CONNECT_OFFSET_STORAGE_TOPIC: my_connect_offsets
       CONNECT_STATUS_STORAGE_TOPIC: my_connect_statuses
       CONNECT_PLUGIN_PATH: "/usr/share/java,/usr/share/java/debezium-oracle,/usr/share/confluent-hub-components,/usr/share/java/kafka-connect-s3"
-      # ← REQUIRED for Debezium
+      CONNECT_PREFLIGHT_CHECK_ENABLED: "false"
       CONNECT_KEY_CONVERTER: "io.confluent.connect.avro.AvroConverter"
       CONNECT_KEY_CONVERTER_SCHEMA_REGISTRY_URL: "http://schema-registry:8081"
       CONNECT_VALUE_CONVERTER: "io.confluent.connect.avro.AvroConverter"
@@ -74,19 +86,20 @@ services:
       AWS_ACCESS_KEY_ID: minioadmin
       AWS_SECRET_ACCESS_KEY: minioadmin
       AWS_DEFAULT_REGION: us-east-1
-
-
     volumes:
       - ./debezium-oracle:/usr/share/java/debezium-oracle
       - ./kafka-connect-s3:/usr/share/java/kafka-connect-s3
+      - ./connectors:/etc/kafka-connect/connectors:ro
     networks:
       - debezium-net
+    restart: unless-stopped
+
   minio:
     image: minio/minio:latest
     container_name: minio
     ports:
-      - "9000:9000"   # S3 API
-      - "9001:9001"   # Console UI
+      - "9000:9000"
+      - "9001:9001"
     environment:
       MINIO_ROOT_USER: minioadmin
       MINIO_ROOT_PASSWORD: minioadmin
@@ -102,17 +115,21 @@ services:
       timeout: 20s
       retries: 3
       start_period: 10s
+    restart: unless-stopped
 
   schema-registry:
     image: confluentinc/cp-schema-registry:7.7.7
     container_name: schema-registry
     ports:
       - "8081:8081"
+    depends_on:
+      - kafka
     environment:
       SCHEMA_REGISTRY_HOST_NAME: schema-registry
       SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: PLAINTEXT://kafka:9092
     networks:
       - debezium-net
+    restart: unless-stopped
 
   kafka-ui:
     image: provectuslabs/kafka-ui:latest
@@ -132,10 +149,11 @@ services:
       KAFKA_CLUSTERS_0_KAFKACONNECT_0_ADDRESS: "http://connect:8083"
     networks:
       - debezium-net
+    restart: unless-stopped
+
   spark-iceberg:
     image: tabulario/spark-iceberg
     container_name: spark-iceberg
-    build: spark/
     networks:
       - debezium-net
     depends_on:
@@ -144,7 +162,7 @@ services:
     volumes:
       - ./warehouse:/home/iceberg/warehouse
       - ./notebooks:/home/iceberg/notebooks/notebooks
-      - ./spark/conf/spark-defaults.conf:/opt/spark/conf/spark-defaults.conf  # Add this line
+      - ./spark/conf/spark-defaults.conf:/opt/spark/conf/spark-defaults.conf
     environment:
       - AWS_ACCESS_KEY_ID=minioadmin
       - AWS_SECRET_ACCESS_KEY=minioadmin
@@ -154,6 +172,8 @@ services:
       - 8082:8080
       - 10000:10000
       - 10001:10001
+    restart: unless-stopped
+
   nessie:
     image: ghcr.io/projectnessie/nessie:0.104.1
     container_name: nessie
@@ -178,6 +198,8 @@ services:
       - CATALOG_WAREHOUSE=s3://warehouse/
       - CATALOG_IO__IMPL=org.apache.iceberg.aws.s3.S3FileIO
       - CATALOG_S3_ENDPOINT=http://minio:9000
+    restart: unless-stopped
+
   mc:
     depends_on:
       - minio
@@ -185,10 +207,16 @@ services:
     container_name: mc
     networks:
       - debezium-net
-    environment:
-      - AWS_ACCESS_KEY_ID=minioadmin
-      - AWS_SECRET_ACCESS_KEY=minioadmin
-      - AWS_REGION=us-east-1
+    entrypoint: >
+      /bin/sh -c "
+      until (/usr/bin/mc config host add minio http://minio:9000 minioadmin minioadmin) do echo 'Waiting for minio...' && sleep 1; done;
+      /usr/bin/mc mb minio/warehouse;
+      /usr/bin/mc policy set download minio/warehouse;
+      echo 'MinIO bucket created';
+      tail -f /dev/null
+      "
+    restart: unless-stopped
+
   clickhouse:
     image: clickhouse/clickhouse-server:latest
     container_name: clickhouse
@@ -209,30 +237,29 @@ services:
         hard: 262144
     networks:
       - debezium-net
+    restart: unless-stopped
+
   superset:
     image: apache/superset:latest
     container_name: superset
     ports:
       - "8088:8088"
     environment:
-      SUPERSET_SECRET_KEY: "change_this_secret_key"
-      PYTHONPATH: "/app/superset_home/.local/lib/python3.10/site-packages"
+      SUPERSET_SECRET_KEY: "change_this_secret_key_to_something_secure"
     depends_on:
       - clickhouse
     networks:
       - debezium-net
-    volumes:
-      - ./:/app/superset_home
+    user: root
     command: >
       sh -c "
-      pip install --user 'sqlalchemy==1.3.24' &&
-      pip install --user 'clickhouse-connect' &&
-      pip install --user 'clickhouse-sqlalchemy==0.2.5' &&
-      superset fab create-admin --username admin --firstname Admin --lastname User --email admin@superset.com --password admin &&
+      pip install clickhouse-connect &&
+      superset fab create-admin --username admin --firstname Admin --lastname User --email admin@superset.com --password admin || true &&
       superset db upgrade &&
       superset init &&
       superset run -p 8088 --with-threads --reload --debugger -h 0.0.0.0
       "
+    restart: unless-stopped
 
 networks:
   debezium-net:
