@@ -5,7 +5,8 @@ refrence ---> https://hub-downloads.confluent.io/api/plugins/confluentinc/kafka-
 refrence ---> https://download.oracle.com/otn-pub/otn_software/jdbc/23262/ojdbc8.jar
 refrence ---> put kafka-connect-s3-version.jar out of lib
 refrence ---> consider spark-defaults.conf 
-git clone https://github.com/SaeidZali/oracle-cdc-debezium-kafka-minio-spark-iceberg.git
+mkdir -p data/{zookeeper,kafka} connectors clickhouse/{data,logs}
+git clone https://github.com/SaeidZali/oracle-cdc-debezium-kafka-minio-spark-iceberg-nessie-clickhouse-superset.git
 cd oracle-cdc-debezium-kafka-minio-spark-iceberg/
 mkdir -p oradata
 sudo chown -R 54321:54321 oradata
