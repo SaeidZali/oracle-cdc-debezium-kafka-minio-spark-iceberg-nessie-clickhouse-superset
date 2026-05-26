@@ -95,12 +95,7 @@ curl --noproxy '*' -i -X POST \
 -----------------------------------------------
 docker exec spark-iceberg aws --endpoint-url http://minio:9000 s3 ls s3://oracle-cdc/
 ------------------------------------------------------------------------------------
-# Restart Spark with Hadoop catalog instead of Hive catalog
-docker exec -it spark-iceberg spark-sql \
---conf spark.sql.catalog.demo=org.apache.iceberg.spark.SparkCatalog \
---conf spark.sql.catalog.demo.uri=http://nessie:19120/iceberg/ \
---conf spark.sql.catalog.demo.warehouse=s3://oracle-cdc/ \
---conf spark.sql.catalog.demo.type=rest
+docker exec -it spark-iceberg spark-sql
 -- Show catalogs (myhadoop should appear)
 SHOW CATALOGS;
 -- Use the nessie catalog
