@@ -152,7 +152,8 @@ services:
     restart: unless-stopped
 
   spark-iceberg:
-    image: tabulario/spark-iceberg
+    #image: tabulario/spark-iceberg
+    build: .
     container_name: spark-iceberg
     networks:
       - debezium-net
