@@ -115,6 +115,10 @@ after each delete in customers table then do this
 WITH all_records AS ( SELECT COALESCE(after.ID, before.ID) as id, COALESCE(after.NAME, before.NAME) as name, op, ts_ms, ROW_NUMBER() OVER (PARTITION BY COALESCE(after.ID, before.ID) ORDER BY ts_ms DESC) as rn FROM parquet.`s3a://oracle-cdc/topics/server1.C__DBZUSER.CUSTOMERS` WHERE COALESCE(after.ID, before.ID) IS NOT NULL ) SELECT id, name FROM all_records WHERE rn = 1 AND op != 'd';
 http://91.107.254.54:8123/play default clickhouse123
 SET allow_experimental_database_iceberg = 1;
-SELECT * FROM iceberg('http://minio:9000/oracle-cdc/oracle_cdc_db/customers_74e3e89e-032c-49e5-a790-66e51e719b40', access_key_id = 'minioadmin', secret_access_key = 'minioadmin') LIMIT 10;
-CREATE TABLE customers_table ENGINE = Iceberg('http://minio:9000/oracle-cdc/oracle_cdc_db/customers_74e3e89e-032c-49e5-a790-66e51e719b40', access_key_id = 'minioadmin', secret_access_key = 'minioadmin');
+SELECT * 
+FROM iceberg('http://minio:9000/oracle-cdc/oracle_cdc_db/customers_c2b7fc66-dabc-4bc0-b004-ca23bf81d979', 
+             access_key_id = 'minioadmin', 
+             secret_access_key = 'minioadmin')
+LIMIT 10;
+CREATE TABLE customers_table ENGINE = Iceberg('http://minio:9000/oracle-cdc/oracle_cdc_db/customers_c2b7fc66-dabc-4bc0-b004-ca23bf81d979', access_key_id = 'minioadmin', secret_access_key = 'minioadmin');
 in localhost:8080 in superset connect to clickhouse
