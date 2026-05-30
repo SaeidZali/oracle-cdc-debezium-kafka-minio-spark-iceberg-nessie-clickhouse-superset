@@ -129,8 +129,5 @@ FROM iceberg('http://minio:9000/oracle-cdc/oracle_cdc_db/customers_c2b7fc66-dabc
 LIMIT 10;
 CREATE TABLE customers_table ENGINE = Iceberg('http://minio:9000/oracle-cdc/oracle_cdc_db/customers_c2b7fc66-dabc-4bc0-b004-ca23bf81d979', access_key_id = 'minioadmin', secret_access_key = 'minioadmin');
 in localhost:8080 in superset connect to clickhouse
-docker container exec -it mc bash
-mc alias set myminio http://minio:9000 minioadmin minioadmin
-mc anonymous set public myminio/oracle-cdc
 docker cp spark.py spark-iceberg:/opt/spark
 docker exec -it spark-iceberg spark-submit --verbose /opt/spark/spark.py 2>&1 | tee spark.log
