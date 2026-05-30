@@ -163,7 +163,6 @@ services:
       - ./warehouse:/home/iceberg/warehouse
       - ./notebooks:/home/iceberg/notebooks/notebooks
       - ./spark/conf/spark-defaults.conf:/opt/spark/conf/spark-defaults.conf
-      - ./spark/python-packages:/opt/spark/python-packages
     environment:
       - AWS_ACCESS_KEY_ID=minioadmin
       - AWS_SECRET_ACCESS_KEY=minioadmin
@@ -262,45 +261,6 @@ services:
       superset run -p 8088 --with-threads --reload --debugger -h 0.0.0.0
       "
     restart: unless-stopped
-
-  postgres:
-    image: postgres:13
-    container_name: postgres
-    environment:
-      POSTGRES_USER: airflow
-      POSTGRES_PASSWORD: airflow
-      POSTGRES_DB: airflow
-    networks:
-      - debezium-net
-    volumes:
-      - ./postgres-data:/var/lib/postgresql/data  # Bind mount instead of named volume
-    healthcheck:
-      test: ["CMD", "pg_isready", "-U", "airflow"]
-      interval: 5s
-      retries: 5
-
-  airflow:
-    image: apache/airflow:2.8.1
-    container_name: airflow
-    restart: always
-    depends_on:
-      - postgres
-    networks:
-      - debezium-net
-    environment:
-      AIRFLOW__CORE__EXECUTOR: LocalExecutor
-      AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
-      AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
-      AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
-    volumes:
-      - ./dags:/opt/airflow/dags
-      - ./logs:/opt/airflow/logs
-      - /var/run/docker.sock:/var/run/docker.sock
-      - /tmp:/tmp
-    ports:
-      - "8085:8080"
-    command: webserver
-    user: "${AIRFLOW_UID:-50000}:${AIRFLOW_GID:-50000}"
 
 networks:
   debezium-net:
