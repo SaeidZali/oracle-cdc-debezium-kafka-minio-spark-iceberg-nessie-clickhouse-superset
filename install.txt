@@ -104,6 +104,13 @@ curl --noproxy '*' -i -X POST \
 docker exec spark-iceberg aws --endpoint-url http://minio:9000 s3 ls s3://oracle-cdc/
 ------------------------------------------------------------------------------------
 docker exec -it spark-iceberg spark-sql
+if gets error
+# Stop the container
+docker stop spark-iceberg
+# Remove it (don't worry, it will be recreated)
+docker rm spark-iceberg
+# Restart with disabled history server
+docker compose up -d spark-iceberg
 SHOW CATALOGS;
 -- Use the nessie catalog
 USE nessie;
