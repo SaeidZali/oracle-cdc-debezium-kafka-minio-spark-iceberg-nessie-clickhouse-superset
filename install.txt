@@ -108,6 +108,9 @@ USE oracle_cdc_db;
 CREATE TABLE customers USING iceberg AS SELECT after.ID as id,after.NAME as name FROM parquet.`s3a://oracle-cdc/topics/server1.C__DBZUSER.CUSTOMERS`;
 -- Query the table
 SELECT * FROM customers;
+SELECT * FROM nessie.oracle_cdc_db.customers.manifests;
+find metadata in output
+s3://oracle-cdc/oracle_cdc_db/look at here/metadata/something.avro
 after each delete in customers table then do this 
 WITH all_records AS ( SELECT COALESCE(after.ID, before.ID) as id, COALESCE(after.NAME, before.NAME) as name, op, ts_ms, ROW_NUMBER() OVER (PARTITION BY COALESCE(after.ID, before.ID) ORDER BY ts_ms DESC) as rn FROM parquet.`s3a://oracle-cdc/topics/server1.C__DBZUSER.CUSTOMERS` WHERE COALESCE(after.ID, before.ID) IS NOT NULL ) SELECT id, name FROM all_records WHERE rn = 1 AND op != 'd';
 http://91.107.254.54:8123/play default clickhouse123
