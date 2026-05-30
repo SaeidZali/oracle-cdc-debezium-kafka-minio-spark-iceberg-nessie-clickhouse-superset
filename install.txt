@@ -126,3 +126,6 @@ in localhost:8080 in superset connect to clickhouse
 for streaming 
 docker exec -it spark-iceberg bash
 pip install clickhouse-connect
+docker container exec -it mc bash
+mc alias set myminio http://minio:9000 minioadmin minioadmin
+mc anonymous set public myminio/oracle-cdc
