@@ -102,6 +102,5 @@ curl --noproxy '*' -i -X POST \
 -----------------------------------------------
 docker exec spark-iceberg aws --endpoint-url http://minio:9000 s3 ls s3://oracle-cdc/
 ------------------------------------------------------------------------------------
-docker cp spark.py spark-iceberg:/opt/spark
 docker exec -it spark-iceberg spark-submit --verbose /opt/spark/spark.py 2>&1 | tee spark.log
 in localhost:8080 in superset connect to clickhouse
