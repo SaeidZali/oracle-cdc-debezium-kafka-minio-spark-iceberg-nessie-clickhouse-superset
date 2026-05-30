@@ -104,32 +104,6 @@ curl --noproxy '*' -i -X POST \
 -----------------------------------------------
 docker exec spark-iceberg aws --endpoint-url http://minio:9000 s3 ls s3://oracle-cdc/
 ------------------------------------------------------------------------------------
-docker exec -it spark-iceberg spark-sql
-SHOW CATALOGS;
--- Use the nessie catalog
-USE nessie;
-SELECT current_catalog();
--- Create database
-CREATE DATABASE IF NOT EXISTS oracle_cdc_db;
--- Use database
-USE oracle_cdc_db;
--- Create Iceberg table from Parquet files
-CREATE TABLE customers USING iceberg AS SELECT after.ID as id,after.NAME as name FROM parquet.`s3a://oracle-cdc/topics/server1.C__DBZUSER.CUSTOMERS`;
--- Query the table
-SELECT * FROM customers;
-SELECT * FROM nessie.oracle_cdc_db.customers.manifests;
-find metadata in output
-s3://oracle-cdc/oracle_cdc_db/look at here/metadata/something.avro
-after each delete in customers table then do this 
-WITH all_records AS ( SELECT COALESCE(after.ID, before.ID) as id, COALESCE(after.NAME, before.NAME) as name, op, ts_ms, ROW_NUMBER() OVER (PARTITION BY COALESCE(after.ID, before.ID) ORDER BY ts_ms DESC) as rn FROM parquet.`s3a://oracle-cdc/topics/server1.C__DBZUSER.CUSTOMERS` WHERE COALESCE(after.ID, before.ID) IS NOT NULL ) SELECT id, name FROM all_records WHERE rn = 1 AND op != 'd';
-http://91.107.254.54:8123/play default clickhouse123
-SET allow_experimental_database_iceberg = 1;
-SELECT * 
-FROM iceberg('http://minio:9000/oracle-cdc/oracle_cdc_db/customers_c2b7fc66-dabc-4bc0-b004-ca23bf81d979', 
-             access_key_id = 'minioadmin', 
-             secret_access_key = 'minioadmin')
-LIMIT 10;
-CREATE TABLE customers_table ENGINE = Iceberg('http://minio:9000/oracle-cdc/oracle_cdc_db/customers_c2b7fc66-dabc-4bc0-b004-ca23bf81d979', access_key_id = 'minioadmin', secret_access_key = 'minioadmin');
-in localhost:8080 in superset connect to clickhouse
 docker cp spark.py spark-iceberg:/opt/spark
 docker exec -it spark-iceberg spark-submit --verbose /opt/spark/spark.py 2>&1 | tee spark.log
+in localhost:8080 in superset connect to clickhouse
