@@ -299,7 +299,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - /tmp:/tmp
     ports:
-      - "8080:8080"
+      - "8085:8080"
     command: webserver
     user: "${AIRFLOW_UID:-50000}:${AIRFLOW_GID:-50000}"
 
