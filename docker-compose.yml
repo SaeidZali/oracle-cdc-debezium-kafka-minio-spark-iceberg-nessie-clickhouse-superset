@@ -163,6 +163,7 @@ services:
       - ./warehouse:/home/iceberg/warehouse
       - ./notebooks:/home/iceberg/notebooks/notebooks
       - ./spark/conf/spark-defaults.conf:/opt/spark/conf/spark-defaults.conf
+      - ./spark/python-packages:/opt/spark/python-packages
     environment:
       - AWS_ACCESS_KEY_ID=minioadmin
       - AWS_SECRET_ACCESS_KEY=minioadmin
@@ -173,6 +174,11 @@ services:
       - 10000:10000
       - 10001:10001
     restart: unless-stopped
+    command: >
+    sh -c "
+    pip install clickhouse-connect &&
+    /opt/spark/bin/spark-class org.apache.spark.deploy.master.Master
+    "
 
   nessie:
     image: ghcr.io/projectnessie/nessie:0.104.1
