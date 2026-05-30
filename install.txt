@@ -11,7 +11,6 @@ mkdir -p data/{zookeeper,kafka} connectors clickhouse/{data,logs}
 mkdir -p ./data/zookeeper/data ./data/zookeeper/txns
 # Set permissions to 777 (most permissive)
 sudo chmod -R 777 ./data
-mkdir -p dags logs postgres-data
 mkdir -p oradata
 sudo chown -R 54321:54321 oradata
 chmod 775 oradata
