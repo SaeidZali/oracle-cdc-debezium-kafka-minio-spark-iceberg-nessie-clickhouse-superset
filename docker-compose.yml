@@ -264,50 +264,50 @@ services:
       "
     restart: unless-stopped
 
-postgres:
-  image: postgres:15
-  container_name: postgres
-  ports:
-    - "5432:5432"
-  environment:
-    POSTGRES_DB: airflow
-    POSTGRES_USER: airflow
-    POSTGRES_PASSWORD: airflow
-  volumes:
-    - ./postgres_data:/var/lib/postgresql/data
-  networks:
-    - debezium-net
-  healthcheck:
-    test: ["CMD-SHELL", "pg_isready -U airflow -d airflow"]
-    interval: 10s
-    timeout: 5s
-    retries: 5
-  restart: unless-stopped
+  postgres:
+    image: postgres:15
+    container_name: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: airflow
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: airflow
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
+    networks:
+      - debezium-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U airflow -d airflow"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
 
-airflow:
-  image: apache/airflow:2.8.1
-  container_name: airflow
-  depends_on:
-    postgres:
-      condition: service_healthy
-  environment:
-    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres:5432/airflow
-    AIRFLOW__CORE__EXECUTOR: LocalExecutor
-    AIRFLOW__WEBSERVER__SECRET_KEY: change_this_secret_key
-    AIRFLOW__CORE__LOAD_EXAMPLES: "false"
-    AIRFLOW__CORE__FERNET_KEY: 81HqDtbqAywKSOumSha3BhWNOdQ26slT6K0YaZeZyPs=
-    _AIRFLOW_WWW_USER_USERNAME: admin
-    _AIRFLOW_WWW_USER_PASSWORD: admin
-  ports:
-    - "8084:8080"
-  volumes:
-    - ./airflow/dags:/opt/airflow/dags
-    - ./airflow/logs:/opt/airflow/logs
-    - ./airflow/plugins:/opt/airflow/plugins
-  networks:
-    - debezium-net
-  command: bash -c "airflow db init && airflow users create -r Admin -u admin -e admin@example.com -f admin -l user -p admin || true && airflow webserver & airflow scheduler"
-  restart: unless-stopped
+  airflow:
+    image: apache/airflow:2.8.1
+    container_name: airflow
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres:5432/airflow
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__WEBSERVER__SECRET_KEY: change_this_secret_key
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+      AIRFLOW__CORE__FERNET_KEY: 81HqDtbqAywKSOumSha3BhWNOdQ26slT6K0YaZeZyPs=
+      _AIRFLOW_WWW_USER_USERNAME: admin
+      _AIRFLOW_WWW_USER_PASSWORD: admin
+    ports:
+      - "8084:8080"
+    volumes:
+      - ./airflow/dags:/opt/airflow/dags
+      - ./airflow/logs:/opt/airflow/logs
+      - ./airflow/plugins:/opt/airflow/plugins
+    networks:
+      - debezium-net
+    command: bash -c "airflow db init && airflow users create -r Admin -u admin -e admin@example.com -f admin -l user -p admin || true && airflow webserver & airflow scheduler"
+    restart: unless-stopped
 
 networks:
   debezium-net:
