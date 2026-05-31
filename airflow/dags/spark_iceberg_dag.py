@@ -9,15 +9,19 @@ default_args = {
     'email_on_failure': False,
     'email_on_retry': False,
     'retries': 1,
-    'retry_delay': timedelta(minutes=5)
+    'retry_delay': timedelta(minutes=1)  # Reduced from 5m to 1m for minute-level runs
 }
 
 with DAG(
     'spark_iceberg_job',
     default_args=default_args,
-    description='Simple Spark Iceberg DAG',
-    schedule_interval='@daily',
-    catchup=False
+    description='Simple Spark Iceberg DAG - Runs Every Minute',
+    # ⬇️⬇️⬇️ CHANGED HERE: Cron for "Every Minute" ⬇️⬇️⬇️
+    schedule_interval='* * * * *',
+    # ⬇️⬇️⬇️ CRITICAL SAFETY SETTINGS ⬇️⬇️⬇️
+    catchup=False,              # PREVENTS 1,440 backfill runs on startup
+    max_active_runs=1,          # PREVENTS overlapping runs if job > 60s
+    dagrun_timeout=timedelta(minutes=55), # Optional: Auto-fail if stuck near next run
 ) as dag:
 
     run_spark_job = BashOperator(
