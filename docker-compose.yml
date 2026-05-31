@@ -7,8 +7,8 @@ services:
     environment:
       ORACLE_SID: ORCLCDB
       ORACLE_PDB: ORCLPDB1
-      INIT_SGA_SIZE: 3000
-      INIT_PGA_SIZE: 1000
+      INIT_SGA_SIZE: 1536
+      INIT_PGA_SIZE: 512
       ORACLE_PWD: oraclepw
     volumes:
       - ./oradata:/opt/oracle/oradata
