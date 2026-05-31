@@ -285,8 +285,12 @@ services:
     restart: unless-stopped
 
   airflow:
-    image: apache/airflow:2.8.1
+    #image: apache/airflow:2.8.1
+    build:
+      context: .
+      dockerfile: Dockerfile.airflow
     container_name: airflow
+    user: root
     depends_on:
       postgres:
         condition: service_healthy
