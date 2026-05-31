@@ -304,7 +304,6 @@ services:
       _AIRFLOW_WWW_USER_PASSWORD: admin
       AIRFLOW__SCHEDULER__DAG_DIR_LIST_INTERVAL: 30  # Check for new DAGs every 30 seconds
       AIRFLOW__SCHEDULER__MIN_FILE_PROCESS_INTERVAL: 30  # Process DAG files every 30 seconds
-      AIRFLOW__CORE__LOAD_EXAMPLES: False
       AIRFLOW__CORE__DAGBAG_IMPORT_TIMEOUT: 60  # Increase timeout if DAGs are complex
     ports:
       - "8084:8080"
