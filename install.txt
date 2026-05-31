@@ -20,6 +20,7 @@ sudo chmod 777 ./ -R ---> for superset
 mkdir -p postgres_data
 mkdir -p airflow/logs airflow/plugins
 mkdir -p ./cloudbeaver_data
+mkdir -p ./dremio/data ./dremio/logs
 docker compose up -d
 docker container logs -f dbz_oracle19
 docker container exec -it -e ORACLE_SID=ORCLCDB dbz_oracle19 sqlplus sys as sysdba
