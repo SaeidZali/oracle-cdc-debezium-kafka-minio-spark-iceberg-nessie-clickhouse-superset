@@ -17,10 +17,20 @@ spark.sql("""
     )
     USING iceberg
 """)
-last_ts = spark.sql("""
-SELECT COALESCE(MAX(ts_ms), 0) AS max_ts
-FROM nessie.oracle_cdc_db.customers
-""").collect()[0][0]
+spark.sql("""
+CREATE TABLE IF NOT EXISTS nessie.oracle_cdc_db.cdc_watermark (
+    table_name STRING,
+    last_ts BIGINT
+)
+USING iceberg
+""")
+df = spark.sql("""
+SELECT COALESCE(w.last_ts, 0) AS last_ts
+FROM (SELECT 1) dummy
+LEFT JOIN nessie.oracle_cdc_db.cdc_watermark w
+ON w.table_name = 'customers'
+""")
+last_ts = df.collect()[0][0]
 # ✅ Apply CDC changes
 spark.sql("""
     MERGE INTO nessie.oracle_cdc_db.customers AS target
