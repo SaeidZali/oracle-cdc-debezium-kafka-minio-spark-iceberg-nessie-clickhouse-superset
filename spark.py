@@ -26,7 +26,8 @@ USING iceberg
 """)
 max_ts = spark.sql("""
 SELECT COALESCE(MAX(ts_ms), 0) AS max_ts
-FROM parquet.`s3a://oracle-cdc/topics/server1.C__DBZUSER.CUSTOMERS`
+FROM nessie.oracle_cdc_db.cdc_watermark
+WHERE table_name = 'customers'
 """).first()[0]
 spark.sql(f"""
 MERGE INTO nessie.oracle_cdc_db.cdc_watermark t
