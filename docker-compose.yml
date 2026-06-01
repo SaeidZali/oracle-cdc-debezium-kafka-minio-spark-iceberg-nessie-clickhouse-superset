@@ -152,8 +152,7 @@ services:
     restart: unless-stopped
 
   spark-iceberg:
-    #image: tabulario/spark-iceberg
-    build: .
+    image: tabulario/spark-iceberg
     container_name: spark-iceberg
     networks:
       - debezium-net
@@ -175,6 +174,11 @@ services:
       - 10000:10000
       - 10001:10001
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "bash", "-c", "pip install clickhouse-connect || true"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   nessie:
     image: ghcr.io/projectnessie/nessie:0.104.1
@@ -285,7 +289,7 @@ services:
     restart: unless-stopped
 
   airflow:
-    #image: apache/airflow:2.8.1
+    image: apache/airflow:2.8.1
     build:
       context: .
       dockerfile: Dockerfile.airflow
