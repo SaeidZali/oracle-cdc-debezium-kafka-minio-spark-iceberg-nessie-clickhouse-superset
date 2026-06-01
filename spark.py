@@ -10,27 +10,41 @@ spark.sql("SELECT current_catalog()").show()
 spark.sql("CREATE DATABASE IF NOT EXISTS oracle_cdc_db")
 spark.sql("show databases").show()
 spark.sql("USE oracle_cdc_db")
-spark.sql("DROP TABLE IF EXISTS nessie.oracle_cdc_db.customers")
 spark.sql("""
-CREATE TABLE nessie.oracle_cdc_db.customers
-USING iceberg
-AS
-WITH all_records AS (
-    SELECT
-        COALESCE(after.ID, before.ID) AS id,
-        COALESCE(after.NAME, before.NAME) AS name,
-        op,
-        ts_ms,
-        ROW_NUMBER() OVER (
-            PARTITION BY COALESCE(after.ID, before.ID)
-            ORDER BY ts_ms DESC
-        ) AS rn
-    FROM parquet.`s3a://oracle-cdc/topics/server1.C__DBZUSER.CUSTOMERS`
-    WHERE COALESCE(after.ID, before.ID) IS NOT NULL
-)
-SELECT id, name
-FROM all_records
-WHERE rn = 1 AND op <> 'd'
+    CREATE TABLE IF NOT EXISTS nessie.oracle_cdc_db.customers (
+        id BIGINT,
+        name STRING
+    )
+    USING iceberg
+""")
+# ✅ Apply CDC changes
+spark.sql("""
+    MERGE INTO nessie.oracle_cdc_db.customers AS target
+    USING (
+        WITH deduped AS (
+            SELECT
+                COALESCE(after.ID, before.ID) AS id,
+                COALESCE(after.NAME, before.NAME) AS name,
+                op,
+                ts_ms,
+                ROW_NUMBER() OVER (
+                    PARTITION BY COALESCE(after.ID, before.ID)
+                    ORDER BY ts_ms DESC
+                ) AS rn
+            FROM parquet.`s3a://oracle-cdc/topics/server1.C__DBZUSER.CUSTOMERS`
+            WHERE COALESCE(after.ID, before.ID) IS NOT NULL
+        )
+        SELECT id, name, op
+        FROM deduped
+        WHERE rn = 1
+    ) AS source
+    ON target.id = source.id
+    WHEN MATCHED AND source.op = 'd' THEN
+        DELETE
+    WHEN MATCHED AND source.op IN ('u', 'c') THEN
+        UPDATE SET target.name = source.name
+    WHEN NOT MATCHED AND source.op IN ('c', 'u') THEN
+        INSERT (id, name) VALUES (source.id, source.name)
 """)
 spark.sql("show tables").show()
 spark.sql("SELECT * FROM nessie.oracle_cdc_db.customers").show()
