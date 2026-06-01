@@ -1,10 +1,10 @@
-refrence ---> https://debezium.io/blog/2022/09/30/debezium-oracle-series-part-1/
-refrence ---> https://debezium.io/blog/2022/10/06/debezium-oracle-series-part-2/
-refrence ---> https://repo1.maven.org/maven2/io/debezium/debezium-connector-oracle/1.9.7.Final/debezium-connector-oracle-1.9.7.Final-plugin.tar.gz
-refrence ---> https://hub-downloads.confluent.io/api/plugins/confluentinc/kafka-connect-s3/versions/12.1.5/confluentinc-kafka-connect-s3-12.1.5.zip
-refrence ---> https://download.oracle.com/otn-pub/otn_software/jdbc/23262/ojdbc8.jar
-refrence ---> put kafka-connect-s3-version.jar out of lib
-refrence ---> consider spark-defaults.conf 
+###refrence ---> https://debezium.io/blog/2022/09/30/debezium-oracle-series-part-1/
+###refrence ---> https://debezium.io/blog/2022/10/06/debezium-oracle-series-part-2/
+###refrence ---> https://repo1.maven.org/maven2/io/debezium/debezium-connector-oracle/1.9.7.Final/debezium-connector-oracle-1.9.7.Final-plugin.tar.gz
+###refrence ---> https://hub-downloads.confluent.io/api/plugins/confluentinc/kafka-connect-s3/versions/12.1.5/confluentinc-kafka-connect-s3-12.1.5.zip
+###refrence ---> https://download.oracle.com/otn-pub/otn_software/jdbc/23262/ojdbc8.jar
+###refrence ---> put kafka-connect-s3-version.jar out of lib
+###refrence ---> consider spark-defaults.conf 
 git clone https://github.com/SaeidZali/oracle-cdc-debezium-kafka-minio-spark-iceberg-nessie-clickhouse-superset.git
 cd oracle-cdc-debezium-kafka-minio-spark-iceberg-nessie-clickhouse-superset/
 mkdir -p data/{zookeeper,kafka} connectors clickhouse/{data,logs}
@@ -31,7 +31,7 @@ STARTUP MOUNT
 ALTER DATABASE ARCHIVELOG; 
 ALTER DATABASE OPEN;
 ARCHIVE LOG LIST;
-add redo log files
+###add redo log files
 ALTER DATABASE ADD SUPPLEMENTAL LOG DATA;
 CREATE TABLESPACE logminer_tbs DATAFILE '/opt/oracle/oradata/ORCLCDB/logminer_tbs.dbf' SIZE 25M REUSE AUTOEXTEND ON MAXSIZE UNLIMITED;
 alter session set container=ORCLPDB1;
@@ -77,9 +77,9 @@ COMMIT;
 ALTER TABLE customers ADD SUPPLEMENTAL LOG DATA (ALL) COLUMNS;
 exit
 docker exec connect curl -s http://localhost:8083/connectors | jq
-for creating topics you must reach flush size 
-create bucket of oracle-cdc in localhost:9001
-or
+###for creating topics you must reach flush size 
+###create bucket of oracle-cdc in localhost:9001
+###or
 docker container exec -it mc bash
 mc alias set myminio http://minio:9000 minioadmin minioadmin
 mc mb myminio/oracle-cdc
@@ -106,15 +106,15 @@ curl --noproxy '*' -i -X POST \
 -----------------------------------------------
 docker exec spark-iceberg aws --endpoint-url http://minio:9000 s3 ls s3://oracle-cdc/
 ------------------------------------------------------------------------------------
-in airflow ui you can see dag
-in localhost:8080 in superset connect to clickhouse and create dashboard
-in dremio 
-add source nessie
-AWS root path s3:// oracle-cdc
-AWS access key minioadmin
-AWS access secret minioadmin
-fs.s3a.path.style.access true
-fs.s3a.endpoint minio:9000
-dremio.s3.compat true
-Nessie endpoint URL http://nessie:19120/api/v2
+###in airflow ui you can see dag
+###in localhost:8080 in superset connect to clickhouse and create dashboard
+###in dremio 
+###add source nessie
+###AWS root path s3:// oracle-cdc
+###AWS access key minioadmin
+###AWS access secret minioadmin
+###fs.s3a.path.style.access true
+###fs.s3a.endpoint minio:9000
+###dremio.s3.compat true
+###Nessie endpoint URL http://nessie:19120/api/v2
 SELECT * from nessie."oracle_cdc_db".customers AT COMMIT "b01a7128b3f452342fc62136ec15eeac8d7b593504cb6bdff80b4fd1b169fab3"
