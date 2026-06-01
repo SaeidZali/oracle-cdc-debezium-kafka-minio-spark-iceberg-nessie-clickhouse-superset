@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS nessie.oracle_cdc_db.cdc_watermark (
 USING iceberg
 """)
 max_ts = spark.sql("""
-SELECT COALESCE(MAX(ts_ms), 0) AS max_ts
+SELECT COALESCE(MAX(last_ts), 0) AS max_ts
 FROM nessie.oracle_cdc_db.cdc_watermark
 WHERE table_name = 'customers'
 """).first()[0]
