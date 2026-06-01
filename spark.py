@@ -56,7 +56,6 @@ client = clickhouse_connect.get_client(
     password='clickhouse123'
 )
 client.command("SET allow_experimental_database_iceberg = 1")
-client.command("DROP TABLE IF EXISTS customers_table")
 desc = spark.sql("DESCRIBE EXTENDED nessie.oracle_cdc_db.customers")
 location = (
     desc.filter("col_name = 'Location'")
@@ -66,7 +65,7 @@ location = (
 print("📍 Table location:", location)
 ch_location = location.replace("s3://oracle-cdc/", "http://minio:9000/oracle-cdc/")
 client.command(f"""
-CREATE TABLE customers_table
+CREATE VIEW IF NOT EXISTS customers_view
 ENGINE = Iceberg(
     '{ch_location}'
 )
