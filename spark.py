@@ -1,6 +1,7 @@
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import col, coalesce, row_number
 from pyspark.sql.window import Window
+from pyspark.sql.functions import current_timestamp, unix_timestamp
 spark = SparkSession.builder \
     .appName("iceberg-test") \
     .getOrCreate()
@@ -24,11 +25,22 @@ CREATE TABLE IF NOT EXISTS nessie.oracle_cdc_db.cdc_watermark (
 )
 USING iceberg
 """)
+now_ts_ms = spark.sql("""
+SELECT unix_timestamp(current_timestamp()) * 1000 AS ts_ms
+""").collect()[0][0]
+spark.sql(f"""
+MERGE INTO nessie.oracle_cdc_db.cdc_watermark t
+USING (
+    SELECT 'customers' AS table_name, {now_ts_ms} AS last_ts
+) s
+ON t.table_name = s.table_name
+WHEN MATCHED THEN UPDATE SET t.last_ts = s.last_ts
+WHEN NOT MATCHED THEN INSERT (table_name, last_ts)
+VALUES (s.table_name, s.last_ts)
+""")
 df = spark.sql("""
 SELECT COALESCE(w.last_ts, 0) AS last_ts
-FROM (SELECT 1) dummy
-LEFT JOIN nessie.oracle_cdc_db.cdc_watermark w
-ON w.table_name = 'customers'
+FROM nessie.oracle_cdc_db.cdc_watermark w
 """)
 last_ts = df.collect()[0][0]
 # ✅ Apply CDC changes
