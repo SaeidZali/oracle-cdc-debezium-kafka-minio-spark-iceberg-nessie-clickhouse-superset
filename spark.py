@@ -17,6 +17,17 @@ CREATE TABLE IF NOT EXISTS nessie.oracle_cdc_db.customers (
 )
 USING iceberg
 """)
+spark.sql("""
+CREATE TABLE IF NOT EXISTS nessie.oracle_cdc_db.cdc_watermark (
+    table_name STRING,
+    last_ts BIGINT
+)
+USING iceberg
+""")
+max_ts = spark.sql(f"""
+SELECT MAX(ts_ms) AS max_ts
+FROM parquet.`s3a://oracle-cdc/topics/server1.C__DBZUSER.CUSTOMERS`
+""").first()[0]
 # ✅ Apply CDC changes
 spark.sql("""
     MERGE INTO nessie.oracle_cdc_db.customers AS target
