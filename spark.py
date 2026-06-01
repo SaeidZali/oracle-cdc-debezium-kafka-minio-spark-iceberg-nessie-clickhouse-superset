@@ -35,10 +35,8 @@ USING (
     SELECT 'customers' AS table_name, {max_ts} AS last_ts
 ) s
 ON t.table_name = s.table_name
-
 WHEN MATCHED THEN
     UPDATE SET t.last_ts = s.last_ts
-
 WHEN NOT MATCHED THEN
     INSERT (table_name, last_ts)
     VALUES (s.table_name, s.last_ts)
