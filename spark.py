@@ -1,7 +1,6 @@
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import col, coalesce, row_number
 from pyspark.sql.window import Window
-from pyspark.sql.functions import current_timestamp, unix_timestamp
 spark = SparkSession.builder \
     .appName("iceberg-test") \
     .getOrCreate()
