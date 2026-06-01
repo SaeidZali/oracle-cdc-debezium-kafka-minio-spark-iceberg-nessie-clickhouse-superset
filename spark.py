@@ -14,8 +14,7 @@ spark.sql("USE oracle_cdc_db")
 spark.sql("""
 CREATE TABLE IF NOT EXISTS nessie.oracle_cdc_db.customers (
     id BIGINT,
-    name STRING,
-    ts_ms BIGINT
+    name STRING
 )
 USING iceberg
 """)
