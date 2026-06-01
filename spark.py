@@ -12,37 +12,13 @@ spark.sql("CREATE DATABASE IF NOT EXISTS oracle_cdc_db")
 spark.sql("show databases").show()
 spark.sql("USE oracle_cdc_db")
 spark.sql("""
-    CREATE TABLE IF NOT EXISTS nessie.oracle_cdc_db.customers (
-        id BIGINT,
-        name STRING
-    )
-    USING iceberg
-""")
-spark.sql("""
-CREATE TABLE IF NOT EXISTS nessie.oracle_cdc_db.cdc_watermark (
-    table_name STRING,
-    last_ts BIGINT
+CREATE TABLE IF NOT EXISTS nessie.oracle_cdc_db.customers (
+    id BIGINT,
+    name STRING,
+    ts_ms BIGINT
 )
 USING iceberg
 """)
-now_ts_ms = spark.sql("""
-SELECT unix_timestamp(current_timestamp()) * 1000 AS ts_ms
-""").collect()[0][0]
-spark.sql(f"""
-MERGE INTO nessie.oracle_cdc_db.cdc_watermark t
-USING (
-    SELECT 'customers' AS table_name, {now_ts_ms} AS last_ts
-) s
-ON t.table_name = s.table_name
-WHEN MATCHED THEN UPDATE SET t.last_ts = s.last_ts
-WHEN NOT MATCHED THEN INSERT (table_name, last_ts)
-VALUES (s.table_name, s.last_ts)
-""")
-df = spark.sql("""
-SELECT COALESCE(w.last_ts, 0) AS last_ts
-FROM nessie.oracle_cdc_db.cdc_watermark w
-""")
-last_ts = df.collect()[0][0]
 # ✅ Apply CDC changes
 spark.sql("""
     MERGE INTO nessie.oracle_cdc_db.customers AS target
@@ -58,7 +34,7 @@ spark.sql("""
                     ORDER BY ts_ms DESC
                 ) AS rn
             FROM parquet.`s3a://oracle-cdc/topics/server1.C__DBZUSER.CUSTOMERS`
-            WHERE COALESCE(after.ID, before.ID) IS NOT NULL AND ts_ms > {last_ts}
+            WHERE COALESCE(after.ID, before.ID) IS NOT NULL
         )
         SELECT id, name, op
         FROM deduped
