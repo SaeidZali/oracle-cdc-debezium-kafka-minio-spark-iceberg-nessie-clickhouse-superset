@@ -17,6 +17,10 @@ spark.sql("""
     )
     USING iceberg
 """)
+last_ts = spark.sql("""
+SELECT COALESCE(MAX(ts_ms), 0) AS max_ts
+FROM nessie.oracle_cdc_db.customers
+""").collect()[0][0]
 # ✅ Apply CDC changes
 spark.sql("""
     MERGE INTO nessie.oracle_cdc_db.customers AS target
@@ -32,7 +36,7 @@ spark.sql("""
                     ORDER BY ts_ms DESC
                 ) AS rn
             FROM parquet.`s3a://oracle-cdc/topics/server1.C__DBZUSER.CUSTOMERS`
-            WHERE COALESCE(after.ID, before.ID) IS NOT NULL
+            WHERE COALESCE(after.ID, before.ID) IS NOT NULL AND ts_ms > {last_ts}
         )
         SELECT id, name, op
         FROM deduped
