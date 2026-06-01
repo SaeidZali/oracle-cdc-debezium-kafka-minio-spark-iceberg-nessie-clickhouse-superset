@@ -24,8 +24,8 @@ CREATE TABLE IF NOT EXISTS nessie.oracle_cdc_db.cdc_watermark (
 )
 USING iceberg
 """)
-max_ts = spark.sql(f"""
-SELECT MAX(ts_ms) AS max_ts
+max_ts = spark.sql("""
+SELECT COALESCE(MAX(ts_ms), 0) AS max_ts
 FROM parquet.`s3a://oracle-cdc/topics/server1.C__DBZUSER.CUSTOMERS`
 """).first()[0]
 # ✅ Apply CDC changes
