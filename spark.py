@@ -28,6 +28,20 @@ max_ts = spark.sql("""
 SELECT COALESCE(MAX(ts_ms), 0) AS max_ts
 FROM parquet.`s3a://oracle-cdc/topics/server1.C__DBZUSER.CUSTOMERS`
 """).first()[0]
+spark.sql(f"""
+MERGE INTO nessie.oracle_cdc_db.cdc_watermark t
+USING (
+    SELECT 'customers' AS table_name, {max_ts} AS last_ts
+) s
+ON t.table_name = s.table_name
+
+WHEN MATCHED THEN
+    UPDATE SET t.last_ts = s.last_ts
+
+WHEN NOT MATCHED THEN
+    INSERT (table_name, last_ts)
+    VALUES (s.table_name, s.last_ts)
+""")
 # ✅ Apply CDC changes
 spark.sql("""
     MERGE INTO nessie.oracle_cdc_db.customers AS target
