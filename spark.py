@@ -43,7 +43,7 @@ WHEN NOT MATCHED THEN
     VALUES (s.table_name, s.last_ts)
 """)
 # ✅ Apply CDC changes
-spark.sql("""
+spark.sql(f"""
     MERGE INTO nessie.oracle_cdc_db.customers AS target
     USING (
         WITH deduped AS (
