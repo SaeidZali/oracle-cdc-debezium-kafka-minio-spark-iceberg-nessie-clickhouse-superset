@@ -57,7 +57,7 @@ spark.sql("""
                     ORDER BY ts_ms DESC
                 ) AS rn
             FROM parquet.`s3a://oracle-cdc/topics/server1.C__DBZUSER.CUSTOMERS`
-            WHERE COALESCE(after.ID, before.ID) IS NOT NULL
+            WHERE COALESCE(after.ID, before.ID) IS NOT NULL AND ts_ms > {max_ts}
         )
         SELECT id, name, op
         FROM deduped
