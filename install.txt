@@ -125,6 +125,7 @@ docker exec spark-iceberg aws --endpoint-url http://minio:9000 s3 ls s3://oracle
 ####in localhost:8080 in superset connect to clickhouse and create dashboard
 ####in dremio 
 ####add source nessie
+####Authentication type = None
 ####AWS root path s3:// oracle-cdc
 ####AWS access key minioadmin
 ####AWS access secret minioadmin
