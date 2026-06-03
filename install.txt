@@ -16,7 +16,9 @@ sudo chown -R 54321:54321 oradata
 chmod 775 oradata
 mkdir -p miniodata
 chmod 777 miniodata
-sudo chmod 777 ./ -R ---> for superset
+ ####for superset
+sudo chmod 777 ./ -R 
+ ####
 mkdir -p postgres_data
 mkdir -p airflow/logs airflow/plugins
 mkdir -p ./cloudbeaver_data
