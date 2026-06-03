@@ -21,6 +21,12 @@ mkdir -p postgres_data
 mkdir -p airflow/logs airflow/plugins
 mkdir -p ./cloudbeaver_data
 mkdir -p ./dremio/data ./dremio/logs
+################################################
+#First go to https://container-registry.oracle.com with your account, then get new Auth token in your account profile. 
+#then in your linux server run below code :
+docker login https://container-registry.oracle.com
+#and put your email and Auth token
+################################################
 docker compose up -d
 docker container logs -f dbz_oracle19
 docker container exec -it -e ORACLE_SID=ORCLCDB dbz_oracle19 sqlplus sys as sysdba
