@@ -136,3 +136,21 @@ docker exec spark-iceberg aws --endpoint-url http://minio:9000 s3 ls s3://oracle
 ####dremio.s3.compat true
 ####Nessie endpoint URL http://nessie:19120/api/v2
 ####SELECT * from nessie."oracle_cdc_db".customers AT COMMIT "b01a7128b3f452342fc62136ec15eeac8d7b593504cb6bdff80b4fd1b169fab3"
+docker container exec -it spark-iceberg spark-sql  WITH latest_before_1_hour AS (
+SELECT COALESCE(after.ID, before.ID) as id,COALESCE(after.NAME, before.NAME) as name,op,ts_ms,
+                         >         ROW_NUMBER() OVER (
+                         >             PARTITION BY COALESCE(after.ID, before.ID)
+                         >             ORDER BY ts_ms DESC
+                         >         ) as rn
+                         >     FROM parquet.`s3a://oracle-cdc/topics/server1.C__DBZUSER.CUSTOMERS`
+                         >     WHERE ts_ms < (UNIX_TIMESTAMP(CURRENT_TIMESTAMP() - INTERVAL '2' HOURS) * 1000)
+                         > )
+                         > SELECT
+                         >     id,
+                         >     name,
+                         >     'state as of 1 hour ago' as description
+                         > FROM latest_before_1_hour
+                         > WHERE rn = 1 AND op != 'd'
+                         > ORDER BY id;
+
+
