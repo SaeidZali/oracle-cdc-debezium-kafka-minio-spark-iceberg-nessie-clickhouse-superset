@@ -41,34 +41,39 @@ WHEN NOT MATCHED THEN
     INSERT (table_name, last_ts)
     VALUES (s.table_name, s.last_ts)
 """)
-# ✅ Apply CDC changes
-spark.sql(f"""
-    MERGE INTO nessie.oracle_cdc_db.customers AS target
-    USING (
-        WITH deduped AS (
-            SELECT
-                COALESCE(after.ID, before.ID) AS id,
-                COALESCE(after.NAME, before.NAME) AS name,
-                op,
-                ts_ms,
-                ROW_NUMBER() OVER (
-                    PARTITION BY COALESCE(after.ID, before.ID)
-                    ORDER BY ts_ms DESC
-                ) AS rn
-            FROM parquet.`s3a://oracle-cdc/topics/server1.C__DBZUSER.CUSTOMERS`
-            WHERE COALESCE(after.ID, before.ID) IS NOT NULL AND ts_ms > {max_ts}
-        )
-        SELECT id, name, op
-        FROM deduped
-        WHERE rn = 1
-    ) AS source
-    ON target.id = source.id
-    WHEN MATCHED AND source.op = 'd' THEN
-        DELETE
-    WHEN MATCHED AND source.op IN ('u', 'c') THEN
-        UPDATE SET target.name = source.name
-    WHEN NOT MATCHED AND source.op IN ('c', 'u') THEN
-        INSERT (id, name) VALUES (source.id, source.name)
+cdc_df = spark.sql(f"""
+WITH deduped AS (
+    SELECT
+        COALESCE(after.ID, before.ID) AS id,
+        COALESCE(after.NAME, before.NAME) AS name,
+        op,
+        ts_ms,
+        ROW_NUMBER() OVER (
+            PARTITION BY COALESCE(after.ID, before.ID)
+            ORDER BY ts_ms DESC
+        ) AS rn
+    FROM parquet.`s3a://oracle-cdc/topics/server1.C__DBZUSER.CUSTOMERS`
+    WHERE COALESCE(after.ID, before.ID) IS NOT NULL
+      AND ts_ms > {max_ts}
+)
+SELECT id, name, op
+FROM deduped
+WHERE rn = 1
+""")
+cdc_df.createOrReplaceTempView("cdc_changes")
+spark.sql("""
+DELETE FROM nessie.oracle_cdc_db.customers
+WHERE id IN (
+    SELECT id
+    FROM cdc_changes
+    WHERE op = 'd'
+)
+""")
+spark.sql("""
+INSERT INTO nessie.oracle_cdc_db.customers
+SELECT id, name
+FROM cdc_changes
+WHERE op IN ('c', 'u')
 """)
 spark.sql("show tables").show()
 spark.sql("SELECT * FROM nessie.oracle_cdc_db.customers").show()
