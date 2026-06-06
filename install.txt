@@ -86,12 +86,12 @@ docker exec -it -e ORACLE_SID=ORCLPDB1 dbz_oracle19 sqlplus c##dbzuser@ORCLPDB1;
 # pass is:dbz
 ################################################
 CREATE TABLE customers (id number(9,0) primary key, name varchar2(50));
+ALTER TABLE customers ADD SUPPLEMENTAL LOG DATA (ALL) COLUMNS;
 INSERT INTO customers VALUES (1001, 'Salles Thomas');
 INSERT INTO customers VALUES (1002, 'George Bailey');
 INSERT INTO customers VALUES (1003, 'Edward Walker');
 INSERT INTO customers VALUES (1004, 'Anne Kretchmar');
 COMMIT;
-ALTER TABLE customers ADD SUPPLEMENTAL LOG DATA (ALL) COLUMNS;
 exit
 docker exec connect curl -s http://localhost:8083/connectors | jq
 ####for creating topics you must reach flush size 
