@@ -4,7 +4,7 @@ from pyspark.sql.window import Window
 spark = SparkSession.builder \
     .appName("iceberg-test") \
     .getOrCreate()
-spark.sql("show catalogs").show()
+spark.sql("SHOW CATALOGS;").show()
 spark.sql("USE nessie")
 spark.sql("SELECT current_catalog()").show()
 spark.sql("CREATE DATABASE IF NOT EXISTS oracle_cdc_db")
