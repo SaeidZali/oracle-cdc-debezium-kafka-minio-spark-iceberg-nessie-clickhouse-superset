@@ -87,11 +87,6 @@ docker exec -it -e ORACLE_SID=ORCLPDB1 dbz_oracle19 sqlplus c##dbzuser@ORCLPDB1;
 ################################################
 CREATE TABLE customers (id number(9,0) primary key, name varchar2(50));
 ALTER TABLE customers ADD SUPPLEMENTAL LOG DATA (ALL) COLUMNS;
-INSERT INTO customers VALUES (1001, 'Salles Thomas');
-INSERT INTO customers VALUES (1002, 'George Bailey');
-INSERT INTO customers VALUES (1003, 'Edward Walker');
-INSERT INTO customers VALUES (1004, 'Anne Kretchmar');
-COMMIT;
 exit
 docker exec connect curl -s http://localhost:8083/connectors | jq
 ####for creating topics you must reach flush size 
@@ -122,6 +117,17 @@ curl --noproxy '*' -i -X POST \
   -d @s3-sink.json
 -----------------------------------------------
 docker exec spark-iceberg aws --endpoint-url http://minio:9000 s3 ls s3://oracle-cdc/
+-----------------------------------------------
+docker exec -it -e ORACLE_SID=ORCLPDB1 dbz_oracle19 sqlplus c##dbzuser@ORCLPDB1;
+################################################
+# pass is:dbz
+################################################
+INSERT INTO customers VALUES (1001, 'Salles Thomas');
+INSERT INTO customers VALUES (1002, 'George Bailey');
+INSERT INTO customers VALUES (1003, 'Edward Walker');
+INSERT INTO customers VALUES (1004, 'Anne Kretchmar');
+COMMIT;
+exit
 ------------------------------------------------------------------------------------
 ####in airflow ui you can see dag
 ####in localhost:8080 in superset connect to clickhouse and create dashboard
