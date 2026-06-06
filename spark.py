@@ -40,6 +40,7 @@ WHEN NOT MATCHED THEN
     INSERT (table_name, last_ts)
     VALUES (s.table_name, 0)
 """)
+last_ts = spark.sql(""" SELECT COALESCE(MAX(last_ts), 0) AS max_ts FROM nessie.oracle_cdc_db.cdc_watermark """).first()[0]
 cdc_df = spark.sql(f"""
 WITH deduped AS (
     SELECT
@@ -53,7 +54,7 @@ WITH deduped AS (
         ) AS rn
     FROM parquet.`s3a://oracle-cdc/topics/server1.C__DBZUSER.CUSTOMERS`
     WHERE COALESCE(after.ID, before.ID) IS NOT NULL
-      AND ts_ms > {max_ts}
+      AND ts_ms > {last_ts}
 )
 SELECT id, name, op
 FROM deduped
