@@ -354,6 +354,7 @@ services:
     volumes:
       - ./dremio/data:/var/lib/dremio
       - ./dremio/logs:/var/log/dremio
+      - ./dremio/config:/opt/dremio/conf  # Add this for config persistence
     depends_on:
       - minio
       - nessie
