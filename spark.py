@@ -4,12 +4,12 @@ from pyspark.sql.window import Window
 spark = SparkSession.builder \
     .appName("iceberg-test") \
     .getOrCreate()
-spark.sql("SHOW CATALOGS;").show()
-spark.sql("USE nessie;")
-spark.sql("SELECT CURRENT_CATALOG();").show()
-spark.sql("CREATE DATABASE IF NOT EXISTS oracle_cdc_db;")
+spark.sql("SHOW CATALOGS").show()
+spark.sql("USE nessie")
+spark.sql("SELECT CURRENT_CATALOG()").show()
+spark.sql("CREATE DATABASE IF NOT EXISTS oracle_cdc_db")
 spark.sql("SHOW DATABASES;").show()
-spark.sql("USE oracle_cdc_db;")
+spark.sql("USE oracle_cdc_db")
 spark.sql("""
 CREATE TABLE IF NOT EXISTS nessie.oracle_cdc_db.customers (
     id BIGINT,
