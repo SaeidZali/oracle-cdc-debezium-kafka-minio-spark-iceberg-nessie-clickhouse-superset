@@ -351,11 +351,6 @@ services:
       - DREMIO_JAVA_SERVER_EXTRA_OPTS=-XX:+UseG1GC -XX:+UseStringDeduplication
       - DREMIO_HEAP_SIZE_MB=4096  # Adjust based on your system
       - DREMIO_DIRECT_MEMORY_SIZE_MB=2048
-      - DREMIO_ADMIN_USERNAME=admin
-      - DREMIO_ADMIN_PASSWORD=admin123
-      - DREMIO_ADMIN_FIRSTNAME=Admin
-      - DREMIO_ADMIN_LASTNAME=User
-      - DREMIO_ADMIN_EMAIL=admin@example.com
     volumes:
       - ./dremio/data:/var/lib/dremio
       - ./dremio/logs:/var/log/dremio
