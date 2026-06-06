@@ -7,9 +7,9 @@ spark = SparkSession.builder \
 spark.sql("SHOW CATALOGS;").show()
 spark.sql("USE nessie;")
 spark.sql("SELECT CURRENT_CATALOG();").show()
-spark.sql("CREATE DATABASE IF NOT EXISTS oracle_cdc_db")
-spark.sql("SHOW DATABASES").show()
-spark.sql("USE oracle_cdc_db")
+spark.sql("CREATE DATABASE IF NOT EXISTS oracle_cdc_db;")
+spark.sql("SHOW DATABASES;").show()
+spark.sql("USE oracle_cdc_db;")
 spark.sql("""
 CREATE TABLE IF NOT EXISTS nessie.oracle_cdc_db.customers (
     id BIGINT,
