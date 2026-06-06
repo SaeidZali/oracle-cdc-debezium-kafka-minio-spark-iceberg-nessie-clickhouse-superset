@@ -355,6 +355,11 @@ services:
       - ./dremio/data:/var/lib/dremio
       - ./dremio/logs:/var/log/dremio
       - ./dremio/config:/opt/dremio/conf  # Add this for config persistence
+      - DREMIO_ADMIN_USERNAME=admin
+      - DREMIO_ADMIN_PASSWORD=admin123
+      - DREMIO_ADMIN_FIRSTNAME=Admin
+      - DREMIO_ADMIN_LASTNAME=User
+      - DREMIO_ADMIN_EMAIL=admin@example.com
     depends_on:
       - minio
       - nessie
