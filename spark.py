@@ -38,7 +38,7 @@ WHEN MATCHED THEN
     UPDATE SET t.last_ts = s.last_ts
 WHEN NOT MATCHED THEN
     INSERT (table_name, last_ts)
-    VALUES (s.table_name, s.last_ts)
+    VALUES (s.table_name, 0)
 """)
 cdc_df = spark.sql(f"""
 WITH deduped AS (
