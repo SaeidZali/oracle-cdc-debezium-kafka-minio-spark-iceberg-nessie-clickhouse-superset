@@ -191,7 +191,7 @@ services:
       - ./nessie-data:/nessie/data
     environment:
       - nessie.version.store.type=ROCKSDB  
-      - nessie.version.store.rocksdb.path=/nessie/data
+      - nessie.version.store.persist.rocks.database-path=/nessie/data
       - nessie.catalog.default-warehouse=warehouse
       - nessie.catalog.warehouses.warehouse.location=s3://oracle-cdc
       - nessie.catalog.service.s3.default-options.region=us-east-1
