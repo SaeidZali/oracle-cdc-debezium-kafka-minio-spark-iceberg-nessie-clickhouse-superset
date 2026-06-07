@@ -75,14 +75,6 @@ SELECT id, name
 FROM cdc_changes
 WHERE op IN ('c','u')
 """)
-spark.sql("""
-DELETE FROM nessie.oracle_cdc_db.customers
-WHERE id IN (
-    SELECT id
-    FROM cdc_changes
-    WHERE op = 't'
-)
-""")
 spark.sql("show tables").show()
 spark.sql("SELECT * FROM nessie.oracle_cdc_db.customers").show()
 import clickhouse_connect
