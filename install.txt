@@ -38,7 +38,7 @@ docker container exec -it -e ORACLE_SID=ORCLCDB dbz_oracle19 sqlplus sys as sysd
 ################################################
 # pass is:oraclepw
 ################################################
-ALTER SYSTEM SET db_recovery_file_dest_size = 10G;
+ALTER SYSTEM SET db_recovery_file_dest_size = 30G;
 ALTER SYSTEM SET db_recovery_file_dest = '/opt/oracle/oradata/ORCLCDB' scope=spfile;
 SHUTDOWN IMMEDIATE
 STARTUP MOUNT
