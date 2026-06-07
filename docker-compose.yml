@@ -352,9 +352,8 @@ services:
       - DREMIO_HEAP_SIZE_MB=4096  # Adjust based on your system
       - DREMIO_DIRECT_MEMORY_SIZE_MB=2048
     volumes:
-      - ./dremio/data:/var/lib/dremio
-      - ./dremio/logs:/var/log/dremio
-      - ./dremio/config:/opt/dremio/conf  # Add this for config persistence
+      - ./dremio/data:/opt/dremio/data
+      - ./dremio/logs:/opt/dremio/log
     depends_on:
       - minio
       - nessie
