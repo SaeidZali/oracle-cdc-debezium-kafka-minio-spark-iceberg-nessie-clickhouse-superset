@@ -73,7 +73,7 @@ spark.sql("""
 INSERT INTO nessie.oracle_cdc_db.customers
 SELECT id, name
 FROM cdc_changes
-WHERE op IN ('c', 'u')
+WHERE op IN ('c')
 """)
 spark.sql("show tables").show()
 spark.sql("SELECT * FROM nessie.oracle_cdc_db.customers").show()
