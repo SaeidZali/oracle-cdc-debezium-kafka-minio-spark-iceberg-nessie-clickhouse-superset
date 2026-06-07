@@ -133,14 +133,17 @@ exit
 ####in localhost:8080 in superset connect to clickhouse and create dashboard
 ####in dremio 
 ####add source nessie
+####in general tab
+####Nessie endpoint URL http://nessie:19120/api/v2
 ####Authentication type = None
+####in storage tab
+####AWS
 ####AWS root path s3:// oracle-cdc
 ####AWS access key minioadmin
 ####AWS access secret minioadmin
 ####fs.s3a.path.style.access true
 ####fs.s3a.endpoint minio:9000
 ####dremio.s3.compat true
-####Nessie endpoint URL http://nessie:19120/api/v2
 ####SELECT * from nessie."oracle_cdc_db".customers AT COMMIT "b01a7128b3f452342fc62136ec15eeac8d7b593504cb6bdff80b4fd1b169fab3"
 docker container exec -it spark-iceberg spark-sql  
 WITH latest_before_1_hour AS (
