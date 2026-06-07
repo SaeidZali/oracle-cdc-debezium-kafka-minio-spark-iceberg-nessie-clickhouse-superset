@@ -187,8 +187,11 @@ services:
       - debezium-net
     ports:
       - 19120:19120
+    volumes:
+      - ./nessie-data:/nessie/data
     environment:
-      - nessie.version.store.type=IN_MEMORY
+      - nessie.version.store.type=ROCKSDB  
+      - nessie.version.store.rocksdb.path=/nessie/data
       - nessie.catalog.default-warehouse=warehouse
       - nessie.catalog.warehouses.warehouse.location=s3://oracle-cdc
       - nessie.catalog.service.s3.default-options.region=us-east-1
