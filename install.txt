@@ -22,7 +22,7 @@ sudo chmod 777 ./ -R
 mkdir -p postgres_data
 mkdir -p airflow/logs airflow/plugins
 mkdir -p ./cloudbeaver_data
-mkdir -p ./dremio/data ./dremio/logs ./dremio/config
+mkdir -p ./dremio/data ./dremio/logs
 ################################################
 #First go to https://container-registry.oracle.com with your account, then get new Auth token in your account profile. 
 #then in your linux server run below code :
