@@ -19,7 +19,11 @@
     "value.converter": "io.confluent.connect.avro.AvroConverter",
     "value.converter.schema.registry.url": "http://schema-registry:8081",
 
-    "snapshot.mode": "initial"
+    "snapshot.mode": "initial",
+    "snapshot.fetch.size": "1000",  // Smaller batches
+    "snapshot.delay.ms": "1000",    // Slow down snapshot
+    "log.mining.batch.size.min": "1000",
+    "log.mining.batch.size.max": "10000"
   }
 }
 
