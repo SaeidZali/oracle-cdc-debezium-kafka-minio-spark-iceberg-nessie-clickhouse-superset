@@ -66,7 +66,7 @@ DELETE FROM nessie.oracle_cdc_db.customers
 WHERE id IN (
     SELECT id
     FROM cdc_changes
-    WHERE op IN ('d', 'u')
+    WHERE op IN ('d')
 )
 """)
 spark.sql("""
