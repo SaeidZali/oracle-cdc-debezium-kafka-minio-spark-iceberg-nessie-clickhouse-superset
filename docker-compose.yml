@@ -387,7 +387,7 @@ services:
     image: postgres:15
     container_name: marquez-db
     environment:
-      POSTGRES_USER: postgres
+      POSTGRES_USER: marquez
       POSTGRES_PASSWORD: marquez123
       POSTGRES_DB: marquez
     volumes:
@@ -412,7 +412,7 @@ services:
       # Database configuration
       MARQUEZ_DB_HOST: marquez-db
       MARQUEZ_DB_PORT: 5432
-      MARQUEZ_DB_USER: postgres
+      MARQUEZ_DB_USER: marquez
       MARQUEZ_DB_PASSWORD: marquez123
       MARQUEZ_DB_DATABASE: marquez
       # API configuration
