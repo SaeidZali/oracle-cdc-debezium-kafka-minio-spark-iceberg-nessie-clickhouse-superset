@@ -1,8 +1,0 @@
-transport:
-  type: http
-  url: http://marquez-api:5000  # Or your OpenLineage backend URL
-  endpoint: /api/v1/lineage
-  # Optional: Add authentication if needed
-  # auth:
-  #   type: api_key
-  #   api_key: your-api-key
