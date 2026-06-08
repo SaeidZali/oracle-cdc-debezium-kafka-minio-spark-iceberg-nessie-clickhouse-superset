@@ -23,17 +23,6 @@
     "snapshot.fetch.size": "100000",  
     "snapshot.delay.ms": "1000",    
     "log.mining.batch.size.min": "0",
-    "log.mining.batch.size.max": "1000000",
-
-    "openlineage.dataset.namespace": "oracle-cdc",
-    "openlineage.parent.job.namespace": "debezium-connect",
-    "openlineage.parent.job.name": "oracle-connector",
-    "openlineage.disabled": "false",
-    "openlineage.transport.type": "http",
-    "openlineage.transport.url": "http://marquez-api:5000",
-    "openlineage.transport.endpoint": "/api/v1/lineage",
-    "openlineage.http.headers.content-type": "application/json",
-    "producer.interceptor.classes": "io.openlineage.kafka.OpenLineageProducerInterceptor",
-    "consumer.interceptor.classes": "io.openlineage.kafka.OpenLineageConsumerInterceptor"
+    "log.mining.batch.size.max": "1000000"
   }
 }
