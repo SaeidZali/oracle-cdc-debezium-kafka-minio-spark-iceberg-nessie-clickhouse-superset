@@ -34,7 +34,7 @@ services:
     restart: unless-stopped
 
   kafka:
-    image: confluentinc/cp-kafka:7.7.7
+    image: confluentinc/cp-kafka:8.1.3
     container_name: kafka
     ports:
       - "9092:9092"
@@ -58,7 +58,7 @@ services:
     restart: unless-stopped
 
   connect:
-    image: confluentinc/cp-kafka-connect:7.7.7
+    image: confluentinc/cp-kafka-connect:8.1.3
     container_name: connect
     hostname: connect
     ports:
@@ -118,7 +118,7 @@ services:
     restart: unless-stopped
 
   schema-registry:
-    image: confluentinc/cp-schema-registry:7.7.7
+    image: confluentinc/cp-schema-registry:8.1.3
     container_name: schema-registry
     ports:
       - "8081:8081"
