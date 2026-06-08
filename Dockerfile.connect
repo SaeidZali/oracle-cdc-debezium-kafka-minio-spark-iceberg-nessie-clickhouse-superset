@@ -2,26 +2,45 @@ FROM alpine:3.19 AS downloader
 
 RUN apk add --no-cache curl
 
-# Download Avro converter JARs
+# Avro converters (Confluent)
 RUN mkdir -p /tmp/confluent-libs && \
-    curl -L "https://packages.confluent.io/maven/io/confluent/kafka-connect-avro-converter/7.8.0/kafka-connect-avro-converter-7.8.0.jar" -o /tmp/confluent-libs/kafka-connect-avro-converter-7.8.0.jar && \
-    curl -L "https://packages.confluent.io/maven/io/confluent/kafka-connect-avro-data/7.8.0/kafka-connect-avro-data-7.8.0.jar" -o /tmp/confluent-libs/kafka-connect-avro-data-7.8.0.jar
+    curl -L "https://packages.confluent.io/maven/io/confluent/kafka-connect-avro-converter/7.8.0/kafka-connect-avro-converter-7.8.0.jar" \
+      -o /tmp/confluent-libs/kafka-connect-avro-converter.jar && \
+    curl -L "https://packages.confluent.io/maven/io/confluent/kafka-connect-avro-data/7.8.0/kafka-connect-avro-data-7.8.0.jar" \
+      -o /tmp/confluent-libs/kafka-connect-avro-data.jar
 
+# =========================
+# FINAL CONNECT IMAGE
+# =========================
 FROM confluentinc/cp-kafka-connect:8.1.3
 
 USER root
 
-# Download OpenLineage Kafka interceptor
+# -------------------------
+# OpenLineage (REQUIRED FIX)
+# -------------------------
+# This is the missing piece in your setup
+RUN curl -L "https://repo1.maven.org/maven2/io/debezium/debezium-openlineage/3.5.2.Final/debezium-openlineage-3.5.2.Final.jar" \
+    -o /usr/share/java/debezium-openlineage-3.5.2.Final.jar
+
+# Optional: Kafka OpenLineage integration (not enough alone, but harmless)
 RUN curl -L "https://github.com/OpenLineage/OpenLineage/releases/download/v1.12.0/openlineage-kafka-1.12.0.jar" \
     -o /usr/share/java/openlineage-kafka-1.12.0.jar
 
-# Copy Avro libraries
+# -------------------------
+# Avro converters
+# -------------------------
 COPY --from=downloader --chown=appuser:appuser /tmp/confluent-libs/*.jar /usr/share/java/
 
-# Copy Debezium Oracle connector
+# -------------------------
+# Debezium Oracle connector
+# -------------------------
 COPY --chown=appuser:appuser ./debezium-oracle /usr/share/java/debezium-oracle/
 
 USER appuser
 
+# -------------------------
+# Healthcheck
+# -------------------------
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
   CMD curl -f http://localhost:8083/ || exit 1
