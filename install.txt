@@ -38,18 +38,7 @@ cat > ./openlineage/openlineage.yml << 'EOF'
 # openlineage.yml - Place in ./openlineage/openlineage.yml
 transport:
   type: http
-  url: http://marquez:5000
-  endpoint: /api/v1/lineage
-  # No auth for local development
-  # For production, add:
-  # auth:
-  #   type: api_key
-  #   api_key: your-api-key
-
-# Optional: Add custom facets
-producers:
-  - type: kafka
-    topic.namespace: kafka://kafka:9092
+  url: http://api:5000
 EOF
 cd spark/conf
 mkdir -p ./connect-smt-libs
