@@ -52,7 +52,7 @@ services:
   connect:
     build:
       context: .
-        dockerfile: Dockerfile.connect
+      dockerfile: Dockerfile.connect
     #image: confluentinc/cp-kafka-connect:8.1.3
     container_name: connect
     hostname: connect
