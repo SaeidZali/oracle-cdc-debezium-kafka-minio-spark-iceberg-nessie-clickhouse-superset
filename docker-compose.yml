@@ -50,7 +50,10 @@ services:
       start_period: 40s
 
   connect:
-    image: confluentinc/cp-kafka-connect:8.1.3
+    build:
+      context: .
+        dockerfile: Dockerfile.connect
+    #image: confluentinc/cp-kafka-connect:8.1.3
     container_name: connect
     hostname: connect
     ports:
@@ -83,6 +86,7 @@ services:
       - ./debezium-oracle:/usr/share/java/debezium-oracle
       - ./kafka-connect-s3:/usr/share/java/kafka-connect-s3
       - ./connectors:/etc/kafka-connect/connectors:ro
+      - ./openlineage.yml:/kafka/openlineage.yml:ro
     networks:
       - debezium-net
     restart: unless-stopped
