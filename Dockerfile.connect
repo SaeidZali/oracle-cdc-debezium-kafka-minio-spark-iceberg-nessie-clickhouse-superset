@@ -1,4 +1,4 @@
-FROM alpine:3.19 as downloader
+FROM alpine:3.19 AS downloader
 
 RUN apk add --no-cache curl
 
@@ -20,8 +20,8 @@ USER root
 COPY --from=downloader --chown=appuser:appuser /tmp/openlineage-libs/* /usr/share/java/
 COPY --from=downloader --chown=appuser:appuser /tmp/confluent-libs/* /usr/share/java/
 
-# Copy Debezium Oracle connector (already exists in your setup)
-COPY --chown=appuser:appuser ./debezium-oracle/* /usr/share/java/debezium-oracle/
+# Copy Debezium Oracle connector (if you have local files)
+# COPY --chown=appuser:appuser ./debezium-oracle/* /usr/share/java/debezium-oracle/
 
 # Create config directory
 RUN mkdir -p /kafka && chown appuser:appuser /kafka
