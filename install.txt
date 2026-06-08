@@ -30,6 +30,7 @@ mkdir -p ./debezium-openlineage-libs
 cd debezium-openlineage-libs
 wget https://repo1.maven.org/maven2/io/openlineage/openlineage-java/1.25.0/openlineage-java-1.25.0.jar
 wget https://repo1.maven.org/maven2/io/debezium/debezium-openlineage-core/3.5.2.Final/debezium-openlineage-core-3.5.2.Final.jar
+mkdir -p ./marquez/postgres_data
 ################################################
 #First go to https://container-registry.oracle.com with your account, then get new Auth token in your account profile. 
 #then in your linux server run below code :
