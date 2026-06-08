@@ -86,10 +86,18 @@ services:
       AWS_ACCESS_KEY_ID: minioadmin
       AWS_SECRET_ACCESS_KEY: minioadmin
       AWS_DEFAULT_REGION: us-east-1
+      OPENLINEAGE_URL: "http://marquez:5000"
+      OPENLINEAGE_TRANSPORT_TYPE: "http"
+      OPENLINEAGE_PRODUCER: "debezium-oracle-connector"
+      OPENLINEAGE_NAMESPACE: "fh-local"
+      KAFKA_BOOTSTRAP: "kafka:9092"
     volumes:
       - ./debezium-oracle:/usr/share/java/debezium-oracle
       - ./kafka-connect-s3:/usr/share/java/kafka-connect-s3
       - ./connectors:/etc/kafka-connect/connectors:ro
+      - ./debezium-openlineage-libs:/usr/share/java/debezium-openlineage
+      - ./openlineage/openlineage.yml:/etc/openlineage.yml:ro
+      - ./connect-smt-libs:/usr/share/java/connect-smt
     networks:
       - debezium-net
     restart: unless-stopped
@@ -164,10 +172,14 @@ services:
       - ./notebooks:/home/iceberg/notebooks/notebooks
       - ./spark/conf/spark-defaults.conf:/opt/spark/conf/spark-defaults.conf
       - ./spark.py:/opt/spark/spark.py
+      - ./openlineage/openlineage.yml:/opt/spark/conf/openlineage.yml:ro
     environment:
       - AWS_ACCESS_KEY_ID=minioadmin
       - AWS_SECRET_ACCESS_KEY=minioadmin
       - AWS_REGION=us-east-1
+      - OPENLINEAGE_URL="http://marquez:5000"
+      - OPENLINEAGE_TRANSPORT_TYPE="http"
+      - SPARK_EXTRA_LISTENERS="io.openlineage.spark.agent.OpenLineageSparkListener"
     ports:
       - 8888:8888
       - 8082:8080
@@ -190,7 +202,7 @@ services:
     volumes:
       - ./nessie-data:/nessie/data
     environment:
-      - nessie.version.store.type=ROCKSDB  
+      - nessie.version.store.type=ROCKSDB
       - nessie.version.store.persist.rocks.database-path=/nessie/data
       - nessie.catalog.default-warehouse=warehouse
       - nessie.catalog.warehouses.warehouse.location=s3://oracle-cdc
@@ -312,6 +324,9 @@ services:
       AIRFLOW__SCHEDULER__DAG_DIR_LIST_INTERVAL: 30  # Check for new DAGs every 30 seconds
       AIRFLOW__SCHEDULER__MIN_FILE_PROCESS_INTERVAL: 30  # Process DAG files every 30 seconds
       AIRFLOW__CORE__DAGBAG_IMPORT_TIMEOUT: 60  # Increase timeout if DAGs are complex
+      OPENLINEAGE_URL: "http://marquez:5000"
+      OPENLINEAGE_TRANSPORT_TYPE: "http"
+      AIRFLOW__OPENLINEAGE__TRANSPORT: '{"type":"http","url":"http://marquez:5000","endpoint":"/api/v1/lineage"}'
     ports:
       - "8084:8080"
     volumes:
@@ -367,8 +382,53 @@ services:
       - debezium-net
     restart: unless-stopped
 
+  # Add Marquez database
+  marquez-db:
+    image: postgres:15
+    container_name: marquez-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: marquez123
+      POSTGRES_DB: marquez
+    volumes:
+      - ./marquez/postgres_data:/var/lib/postgresql/data
+    networks:
+      - debezium-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d marquez"]  # FIXED
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # Marquez API + UI
+  marquez:
+    image: marquezproject/marquez:0.50.0
+    container_name: marquez
+    ports:
+      - "5000:5000"   # API
+      - "3000:3000"   # UI
+    environment:
+      # Database configuration
+      MARQUEZ_DB_HOST: marquez-db
+      MARQUEZ_DB_PORT: 5432
+      MARQUEZ_DB_USER: postgres
+      MARQUEZ_DB_PASSWORD: marquez123
+      MARQUEZ_DB_DATABASE: marquez
+      # API configuration
+      MARQUEZ_PORT: 5000
+      MARQUEZ_ADMIN_PORT: 5001
+      # Dropwizard metrics
+      MARQUEZ_METRICS_PORT: 5001
+      # Timezone
+      TZ: UTC
+    depends_on:
+      marquez-db:
+        condition: service_healthy
+    networks:
+      - debezium-net
+    restart: unless-stopped
+
 networks:
   debezium-net:
     driver: bridge
-
-
