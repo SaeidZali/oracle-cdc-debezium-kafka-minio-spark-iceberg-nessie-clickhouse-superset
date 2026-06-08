@@ -84,8 +84,7 @@ services:
       AWS_DEFAULT_REGION: us-east-1
       OPENLINEAGE_DISABLED: "false"
       OPENLINEAGE_TRANSPORT_TYPE: "http"
-      OPENLINEAGE_TRANSPORT_URL: "http://api:5000"
-      OPENLINEAGE_TRANSPORT_ENDPOINT: "/api/v1/lineage"
+      OPENLINEAGE_TRANSPORT_URL: "http://api:5001/api/v1/lineage"
       OPENLINEAGE_NAMESPACE: "oracle-cdc"
       OPENLINEAGE_PRODUCER_INTERCEPTORS_ENABLED: "true"
     volumes:
