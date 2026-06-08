@@ -26,23 +26,6 @@ mkdir -p ./dremio/data ./dremio/logs
 chmod 777 ./dremio/data ./dremio/logs
 mkdir -p ./nessie-data
 chmod 777 ./nessie-data
-mkdir -p ./debezium-openlineage-libs
-cd debezium-openlineage-libs
-wget https://repo1.maven.org/maven2/io/openlineage/openlineage-java/1.25.0/openlineage-java-1.25.0.jar
-wget https://repo1.maven.org/maven2/io/debezium/debezium-openlineage-core/3.5.2.Final/debezium-openlineage-core-3.5.2.Final.jar
-cd ../
-mkdir -p openlineage/
-# Create the openlineage.yml file
-cat > ./openlineage/openlineage.yml << 'EOF'
-# openlineage.yml - Place in ./openlineage/openlineage.yml
-transport:
-  type: http
-  url: http://api:5000
-EOF
-cd spark/conf
-mkdir -p ./connect-smt-libs
-wget https://repo1.maven.org/maven2/io/debezium/debezium-openlineage-core/3.5.2.Final/debezium-openlineage-core-3.5.2.Final.jar
-cd ../../
 ################################################
 #First go to https://container-registry.oracle.com with your account, then get new Auth token in your account profile. 
 #then in your linux server run below code :
@@ -164,5 +147,4 @@ WITH latest_before_1_hour AS (
 SELECT COALESCE(after.ID, before.ID) as id,COALESCE(after.NAME, before.NAME) as name,op,ts_ms,ROW_NUMBER() OVER (PARTITION BY COALESCE(after.ID, before.ID) 
 ORDER BY ts_ms DESC as rn FROM parquet.`s3a://oracle-cdc/topics/server1.C__DBZUSER.CUSTOMERS` WHERE ts_ms < (UNIX_TIMESTAMP(CURRENT_TIMESTAMP() - INTERVAL '2' HOURS) * 1000))
 SELECT id,name,'state as of 1 hour ago' as description FROM latest_before_1_hour WHERE rn = 1 AND op != 'd' ORDER BY id;
-
 
