@@ -24,6 +24,16 @@
     "partitioner.class": "io.confluent.connect.storage.partitioner.DefaultPartitioner",
     "flush.size": "100000",
     "rotate.interval.ms": "1000",
-    "behavior.on.null.values": "ignore"
+    "behavior.on.null.values": "ignore",
+
+    "value.converter.schema.read": "true",
+    "transforms": "openlineage",
+    "transforms.openlineage.type": "io.factorhouse.openlineage.kafka.OpenLineageLifecycleSmt",
+    "openlineage.dataset.namespace": "s3://minio:9000/oracle-cdc",
+    "openlineage.namespace": "fh-local",
+    "openlineage.kafka.bootstrap.servers": "kafka:9092",
+    "openlineage.schema.registry.url": "http://schema-registry:8081",
+    "openlineage.marquez.url": "http://marquez:5000",
+    "tasks.max": "1"
   }
 }
