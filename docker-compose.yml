@@ -58,8 +58,6 @@ services:
     depends_on:
       kafka:
         condition: service_healthy
-      oracle:
-        condition: service_healthy
       minio:
         condition: service_healthy
     environment:
