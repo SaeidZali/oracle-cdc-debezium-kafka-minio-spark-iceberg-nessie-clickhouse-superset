@@ -82,6 +82,12 @@ services:
       AWS_ACCESS_KEY_ID: minioadmin
       AWS_SECRET_ACCESS_KEY: minioadmin
       AWS_DEFAULT_REGION: us-east-1
+      OPENLINEAGE_DISABLED: "false"
+      OPENLINEAGE_TRANSPORT_TYPE: "http"
+      OPENLINEAGE_TRANSPORT_URL: "http://api:5000"
+      OPENLINEAGE_TRANSPORT_ENDPOINT: "/api/v1/lineage"
+      OPENLINEAGE_NAMESPACE: "oracle-cdc"
+      OPENLINEAGE_PRODUCER_INTERCEPTORS_ENABLED: "true"
     volumes:
       - ./debezium-oracle:/usr/share/java/debezium-oracle
       - ./kafka-connect-s3:/usr/share/java/kafka-connect-s3
