@@ -32,6 +32,24 @@ wget https://repo1.maven.org/maven2/io/openlineage/openlineage-java/1.25.0/openl
 wget https://repo1.maven.org/maven2/io/debezium/debezium-openlineage-core/3.5.2.Final/debezium-openlineage-core-3.5.2.Final.jar
 mkdir -p ./marquez/postgres_data
 mkdir -p openlineage/
+# Create the openlineage.yml file
+cat > ./openlineage/openlineage.yml << 'EOF'
+# openlineage.yml - Place in ./openlineage/openlineage.yml
+transport:
+  type: http
+  url: http://marquez:5000
+  endpoint: /api/v1/lineage
+  # No auth for local development
+  # For production, add:
+  # auth:
+  #   type: api_key
+  #   api_key: your-api-key
+
+# Optional: Add custom facets
+producers:
+  - type: kafka
+    topic.namespace: kafka://kafka:9092
+EOF
 ################################################
 #First go to https://container-registry.oracle.com with your account, then get new Auth token in your account profile. 
 #then in your linux server run below code :
