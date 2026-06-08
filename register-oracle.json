@@ -20,10 +20,18 @@
     "value.converter.schema.registry.url": "http://schema-registry:8081",
 
     "snapshot.mode": "initial",
-    "snapshot.fetch.size": "100000",  
-    "snapshot.delay.ms": "1000",    
+    "snapshot.fetch.size": "100000",
+    "snapshot.delay.ms": "1000",
     "log.mining.batch.size.min": "0",
-    "log.mining.batch.size.max": "1000000"
+    "log.mining.batch.size.max": "1000000",
+    "openlineage.integration.enabled": "true",
+    "openlineage.integration.config.file.path": "/etc/openlineage.yml",
+    "openlineage.integration.job.namespace": "oracle_cdc",
+    "openlineage.integration.job.description": "CDC from Oracle to Kafka for data lake",
+    "openlineage.integration.job.tags": "env=production,team=data-engineering,source=oracle,target=kafka",
+    "openlineage.integration.job.owners": "Data Platform Team=maintainer,CDC Team=operator",
+    "transforms": "openlineage",
+    "transforms.openlineage.type": "io.debezium.transforms.openlineage.OpenLineage",
+    "schema.history.internal.kafka.bootstrap.servers": "kafka:9092"
   }
 }
-
