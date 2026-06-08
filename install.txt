@@ -6,7 +6,7 @@
 ####refrence ---> put kafka-connect-s3-version.jar out of lib
 ####refrence ---> consider spark-defaults.conf 
 git clone https://github.com/SaeidZali/real_time_platform.git
-cd oracle-cdc-debezium-kafka-minio-spark-iceberg-nessie-clickhouse-superset/
+cd real_time_platform/
 mkdir -p data/{zookeeper,kafka} connectors clickhouse/{data,logs}
 mkdir -p ./data/zookeeper/data ./data/zookeeper/txns
 #### Set permissions to 777 (most permissive)
