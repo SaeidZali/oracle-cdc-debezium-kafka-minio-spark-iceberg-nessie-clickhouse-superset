@@ -27,6 +27,8 @@ mkdir -p ./dremio/data ./dremio/logs
 chmod 777 ./dremio/data ./dremio/logs
 mkdir -p ./nessie-data
 chmod 777 ./nessie-data
+mkdir -p ./data/marquez/postgres
+chmod 777 ./data/marquez/postgres
 ################################################
 #First go to https://container-registry.oracle.com with your account, then get new Auth token in your account profile. 
 #then in your linux server run below code :
