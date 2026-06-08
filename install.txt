@@ -50,6 +50,9 @@ producers:
   - type: kafka
     topic.namespace: kafka://kafka:9092
 EOF
+cd spark/conf
+mkdir -p ./connect-smt-libs
+wget https://repo1.maven.org/maven2/io/debezium/debezium-openlineage-core/3.5.2.Final/debezium-openlineage-core-3.5.2.Final.jar
 ################################################
 #First go to https://container-registry.oracle.com with your account, then get new Auth token in your account profile. 
 #then in your linux server run below code :
