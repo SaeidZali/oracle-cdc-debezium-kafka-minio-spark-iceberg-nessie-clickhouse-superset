@@ -17,6 +17,15 @@
     "key.converter.schema.registry.url": "http://schema-registry:8081",
     "value.converter": "io.confluent.connect.avro.AvroConverter",
     "value.converter.schema.registry.url": "http://schema-registry:8081",
-    "snapshot.mode": "initial"
+    "snapshot.mode": "initial",
+
+    "openlineage.integration.enabled": true,
+    "openlineage.marquez.url": "http://api:5000/api/v1/lineage",
+    "openlineage.dataset.namespace": "oracle-cdc",
+
+    "transforms": "openlineage",
+    "transforms.openlineage.type": "io.debezium.transforms.openlineage.OpenLineage",
+    "transforms.openlineage.marquez.url": "http://api:5001/api/v1/lineage",
+    "transforms.openlineage.dataset.namespace": "oracle-cdc"
   }
 }
