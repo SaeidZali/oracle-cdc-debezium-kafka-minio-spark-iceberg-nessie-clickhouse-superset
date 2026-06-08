@@ -18,6 +18,7 @@
     "value.converter": "io.confluent.connect.avro.AvroConverter",
     "value.converter.schema.registry.url": "http://schema-registry:8081",
     "snapshot.mode": "initial",
+    "openlineage.integration.enabled": "true",
     "transforms": "openlineage",
     "transforms.openlineage.type": "io.debezium.transforms.openlineage.OpenLineage",
     "transforms.openlineage.marquez.url": "http://api:5001/api/v1/lineage",
