@@ -7,8 +7,7 @@
 ####refrence ---> consider spark-defaults.conf 
 git clone https://github.com/SaeidZali/real_time_platform.git
 cd real_time_platform/
-mkdir -p data/{zookeeper,kafka} connectors clickhouse/{data,logs}
-mkdir -p ./data/zookeeper/data ./data/zookeeper/txns
+mkdir -p data/{kafka} connectors clickhouse/{data,logs}
 #### Set permissions to 777 (most permissive)
 sudo chmod -R 777 ./data
 mkdir -p oradata
