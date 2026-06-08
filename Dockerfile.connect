@@ -2,12 +2,16 @@ FROM alpine:3.19 AS downloader
 
 RUN apk add --no-cache curl
 
-# Download OpenLineage JARs
+# Download OpenLineage JARs - both core and API
 RUN mkdir -p /tmp/openlineage-libs && \
     curl -L "https://repo1.maven.org/maven2/io/debezium/debezium-openlineage-core/3.3.0.Final/debezium-openlineage-core-3.3.0.Final-libs.tar.gz" -o /tmp/openlineage.tar.gz && \
     tar -xzvf /tmp/openlineage.tar.gz -C /tmp/openlineage-libs --strip-components=1
 
-# Download Avro converter JARs for Confluent (if needed)
+# Download Debezium OpenLineage API (needed for the SMT)
+RUN curl -L "https://repo1.maven.org/maven2/io/debezium/debezium-openlineage-api/3.5.2.Final/debezium-openlineage-api-3.5.2.Final.jar" \
+    -o /tmp/openlineage-libs/debezium-openlineage-api-3.5.2.Final.jar
+
+# Download Avro converter JARs for Confluent
 RUN mkdir -p /tmp/confluent-libs && \
     curl -L "https://packages.confluent.io/maven/io/confluent/kafka-connect-avro-converter/7.8.0/kafka-connect-avro-converter-7.8.0.jar" -o /tmp/confluent-libs/kafka-connect-avro-converter-7.8.0.jar && \
     curl -L "https://packages.confluent.io/maven/io/confluent/kafka-connect-avro-data/7.8.0/kafka-connect-avro-data-7.8.0.jar" -o /tmp/confluent-libs/kafka-connect-avro-data-7.8.0.jar
@@ -16,14 +20,23 @@ FROM confluentinc/cp-kafka-connect:8.1.3
 
 USER root
 
-# Copy OpenLineage libraries from downloader stage
-COPY --from=downloader --chown=appuser:appuser /tmp/openlineage-libs/* /usr/share/java/
-COPY --from=downloader --chown=appuser:appuser /tmp/confluent-libs/* /usr/share/java/
+# Copy OpenLineage libraries to main classpath (where Kafka Connect scans for plugins)
+COPY --from=downloader --chown=appuser:appuser /tmp/openlineage-libs/*.jar /usr/share/java/
 
-# Copy Debezium Oracle connector (if you have local files)
-# COPY --chown=appuser:appuser ./debezium-oracle/* /usr/share/java/debezium-oracle/
+# Copy Confluent Avro libraries
+COPY --from=downloader --chown=appuser:appuser /tmp/confluent-libs/*.jar /usr/share/java/
+
+# Copy Debezium Oracle connector - uncomment if you have local files
+# COPY --chown=appuser:appuser ./debezium-oracle/*.jar /usr/share/java/debezium-oracle/
 
 # Create config directory
 RUN mkdir -p /kafka && chown appuser:appuser /kafka
 
+# Set classpath to ensure all JARs are loaded
+ENV CLASSPATH=/usr/share/java/*
+
 USER appuser
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+  CMD curl -f http://localhost:8083/ || exit 1
