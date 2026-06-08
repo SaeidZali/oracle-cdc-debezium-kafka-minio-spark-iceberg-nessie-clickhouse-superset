@@ -376,7 +376,7 @@ services:
       MARQUEZ_ADMIN_PORT: 5001
     ports:
       - "5000:5000"
-      - "5001:5001"
+      - "5002:5001"
     networks:
       - debezium-net
     restart: unless-stopped
