@@ -86,18 +86,10 @@ services:
       AWS_ACCESS_KEY_ID: minioadmin
       AWS_SECRET_ACCESS_KEY: minioadmin
       AWS_DEFAULT_REGION: us-east-1
-      OPENLINEAGE_URL: "http://api:5000"
-      OPENLINEAGE_TRANSPORT_TYPE: "http"
-      OPENLINEAGE_PRODUCER: "debezium-oracle-connector"
-      OPENLINEAGE_NAMESPACE: "fh-local"
-      KAFKA_BOOTSTRAP: "kafka:9092"
     volumes:
       - ./debezium-oracle:/usr/share/java/debezium-oracle
       - ./kafka-connect-s3:/usr/share/java/kafka-connect-s3
       - ./connectors:/etc/kafka-connect/connectors:ro
-      - ./debezium-openlineage-libs:/usr/share/java/debezium-openlineage
-      - ./openlineage/openlineage.yml:/etc/openlineage.yml:ro
-      - ./connect-smt-libs:/usr/share/java/connect-smt
     networks:
       - debezium-net
     restart: unless-stopped
@@ -172,14 +164,10 @@ services:
       - ./notebooks:/home/iceberg/notebooks/notebooks
       - ./spark/conf/spark-defaults.conf:/opt/spark/conf/spark-defaults.conf
       - ./spark.py:/opt/spark/spark.py
-      - ./openlineage/openlineage.yml:/opt/spark/conf/openlineage.yml:ro
     environment:
       - AWS_ACCESS_KEY_ID=minioadmin
       - AWS_SECRET_ACCESS_KEY=minioadmin
       - AWS_REGION=us-east-1
-      - OPENLINEAGE_URL="http://api:5000"
-      - OPENLINEAGE_TRANSPORT_TYPE="http"
-      - SPARK_EXTRA_LISTENERS="io.openlineage.spark.agent.OpenLineageSparkListener"
     ports:
       - 8888:8888
       - 8082:8080
@@ -202,7 +190,7 @@ services:
     volumes:
       - ./nessie-data:/nessie/data
     environment:
-      - nessie.version.store.type=ROCKSDB
+      - nessie.version.store.type=ROCKSDB  
       - nessie.version.store.persist.rocks.database-path=/nessie/data
       - nessie.catalog.default-warehouse=warehouse
       - nessie.catalog.warehouses.warehouse.location=s3://oracle-cdc
@@ -324,9 +312,6 @@ services:
       AIRFLOW__SCHEDULER__DAG_DIR_LIST_INTERVAL: 30  # Check for new DAGs every 30 seconds
       AIRFLOW__SCHEDULER__MIN_FILE_PROCESS_INTERVAL: 30  # Process DAG files every 30 seconds
       AIRFLOW__CORE__DAGBAG_IMPORT_TIMEOUT: 60  # Increase timeout if DAGs are complex
-      OPENLINEAGE_URL: "http://api:5000"
-      OPENLINEAGE_TRANSPORT_TYPE: "http"
-      AIRFLOW__OPENLINEAGE__TRANSPORT: '{"type":"http","url":"http://api:5000","endpoint":"/api/v1/lineage"}'
     ports:
       - "8084:8080"
     volumes:
@@ -382,50 +367,7 @@ services:
       - debezium-net
     restart: unless-stopped
 
-  db:
-    image: postgres:14
-    container_name: marquez-db
-    environment:
-      POSTGRES_USER: marquez
-      POSTGRES_PASSWORD: marquez
-      POSTGRES_DB: marquez
-    ports:
-      - "5433:5432"
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-
-  api:
-    image: marquezproject/marquez:latest
-    container_name: marquez-api
-    depends_on:
-      - db
-    environment:
-      POSTGRES_HOST: db
-      POSTGRES_PORT: 5432
-      POSTGRES_DB: marquez
-      POSTGRES_USER: marquez
-      POSTGRES_PASSWORD: marquez
-      MARQUEZ_PORT: 5000
-      MARQUEZ_ADMIN_PORT: 5001
-    ports:
-      - "5000:5000"
-      - "5002:5001"
-
-  web:
-    image: marquezproject/marquez-web:latest
-    container_name: marquez-web
-    depends_on:
-      - api
-    environment:
-      MARQUEZ_HOST: api
-      MARQUEZ_PORT: 5000
-      WEB_PORT: 3000
-    ports:
-      - "3000:3000"
-
-volumes:
-  pgdata:
-
 networks:
   debezium-net:
     driver: bridge
+
