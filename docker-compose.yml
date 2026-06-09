@@ -158,6 +158,7 @@ services:
       - ./notebooks:/home/iceberg/notebooks/notebooks
       - ./spark/conf/spark-defaults.conf:/opt/spark/conf/spark-defaults.conf
       - ./spark.py:/opt/spark/spark.py
+      - ./jars/openlineage-spark.jar:/opt/spark/jars/openlineage-spark.jar
     environment:
       - AWS_ACCESS_KEY_ID=minioadmin
       - AWS_SECRET_ACCESS_KEY=minioadmin
