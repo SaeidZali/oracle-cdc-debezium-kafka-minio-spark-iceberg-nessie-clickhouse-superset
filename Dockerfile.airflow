@@ -6,3 +6,4 @@ RUN apt-get update && \
     apt-get clean
 USER airflow
 RUN pip install apache-airflow-providers-apache-spark
+RUN pip install apache-airflow-providers-openlineage
