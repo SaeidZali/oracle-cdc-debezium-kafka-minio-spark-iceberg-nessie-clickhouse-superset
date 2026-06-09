@@ -26,6 +26,7 @@
     "behavior.on.null.values": "ignore",
     "flush.size": "1000",
     "rotate.interval.ms": "1000",
-    "rotate.schedule.interval.ms": "5000"
+    "rotate.schedule.interval.ms": "5000",
+    "timezone": "UTC"
   }
 }
