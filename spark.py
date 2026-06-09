@@ -24,6 +24,7 @@ CREATE TABLE IF NOT EXISTS nessie.oracle_cdc_db.cdc_watermark (
 )
 USING iceberg
 """)
+last_ts = spark.sql(""" SELECT COALESCE(MAX(last_ts), 0) AS max_ts FROM nessie.oracle_cdc_db.cdc_watermark """).first()[0]
 max_ts = spark.sql("""
 SELECT COALESCE(MAX(ts_ms), 0) AS max_ts
 FROM parquet.`s3a://oracle-cdc/topics/server1.C__DBZUSER.CUSTOMERS`
@@ -40,7 +41,6 @@ WHEN NOT MATCHED THEN
     INSERT (table_name, last_ts)
     VALUES (s.table_name, 0)
 """)
-last_ts = spark.sql(""" SELECT COALESCE(MAX(last_ts), 0) AS max_ts FROM nessie.oracle_cdc_db.cdc_watermark """).first()[0]
 cdc_df = spark.sql(f"""
 WITH deduped AS (
     SELECT
