@@ -401,6 +401,7 @@ services:
     environment:
       MARQUEZ_HOST: marquez
       MARQUEZ_PORT: 5000
+      WEB_PORT: 3000
     networks:
       - debezium-net
 
