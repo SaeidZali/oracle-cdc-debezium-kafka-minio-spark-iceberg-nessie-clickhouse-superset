@@ -37,12 +37,6 @@ mc alias set myminio http://minio:9000 minioadmin minioadmin
 mc mb myminio/oracle-cdc
 mc anonymous set public myminio/oracle-cdc
 exit
-docker exec -it connect kafka-avro-console-consumer \
-  --bootstrap-server kafka:9092 \
-  --topic server1.C__DBZUSER.CUSTOMERS \
-  --from-beginning \
-  --property print.key=true \
-  --property schema.registry.url=http://schema-registry:8081
 -----------------------------------------------
 curl --noproxy localhost,127.0.0.1 -i -X POST \
   -H "Accept:application/json" \
