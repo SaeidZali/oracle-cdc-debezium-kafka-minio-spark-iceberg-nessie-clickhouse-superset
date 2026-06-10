@@ -25,7 +25,7 @@
 
     "partitioner.class": "io.confluent.connect.storage.partitioner.TimeBasedPartitioner",
     "path.format": "'year'=YYYY/'month'=MM/'day'=dd/'hour'=HH",
-    "timestamp.extractor": "WallClock",
+    "timestamp.extractor": "Record",
     "locale": "en_US",
     "timezone": "UTC",
 
