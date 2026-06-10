@@ -21,14 +21,16 @@
     "value.converter.schema.registry.url": "http://schema-registry:8081",
 
     "schema.compatibility": "NONE",
-    "partitioner.class": "io.confluent.connect.storage.partitioner.DefaultPartitioner",
     "behavior.on.null.values": "ignore",
-    "timezone": "UTC",
+
     "partitioner.class": "io.confluent.connect.storage.partitioner.TimeBasedPartitioner",
     "path.format": "'year'=YYYY/'month'=MM/'day'=dd/'hour'=HH",
-    "timestamp.extractor": "Record",
-    "locale": "en-US",
-    "rotate.schedule.interval.ms": "60000",
-    "flush.size": "10000"
+    "timestamp.extractor": "WallClock",
+    "locale": "en_US",
+    "timezone": "UTC",
+
+    "flush.size": "500",
+    "rotate.interval.ms": "30000",
+    "rotate.schedule.interval.ms": "60000"
   }
 }
