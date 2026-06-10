@@ -62,10 +62,11 @@ mkdir -p ./marquez/postgres
 mkdir -p ./jars
 check_success "Directory creation"
 
-# Set permissions for data directory
+# Set permissions for data directory (including Kafka)
 print_status "Setting permissions for ./data..."
 sudo chmod -R 755 ./data
-sudo chmod -R 777 ./data
+sudo chown -R 1000:1000 ./data/kafka  # Fix: Set ownership for Kafka user
+sudo chmod -R 755 ./data/kafka         # Fix: Proper permissions for Kafka
 check_success "Data directory permissions"
 
 # Set permissions for oradata
@@ -133,6 +134,10 @@ print_status "========================================="
 # Optional: List directory contents
 print_status "Current directory contents:"
 ls -la
+
+# Verify Kafka directory permissions
+print_status "Kafka directory permissions:"
+ls -la ./data/kafka/
 
 print_status "You are now in: $(pwd)"
 print_status "To verify everything is set up correctly, run: ls -la"
