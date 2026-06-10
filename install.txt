@@ -1,5 +1,6 @@
 git clone https://github.com/SaeidZali/real_time_platform.git
 cd real_time_platform/
+mkdir -p connectors clickhouse/{data,logs} ./data/kafka oradata miniodata postgres_data airflow/logs airflow/plugins ./cloudbeaver_data ./dremio/data ./dremio/logs ./nessie-data ./marquez/postgres ./jars
 chmod +x setup.sh
 ./setup.sh
 ################################################
