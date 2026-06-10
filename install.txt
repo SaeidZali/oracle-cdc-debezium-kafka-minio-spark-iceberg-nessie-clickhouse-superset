@@ -30,8 +30,7 @@ chmod +x run_oracle_setup.sh
 ./run_oracle_setup.sh
 docker exec connect curl -s http://localhost:8083/connectors | jq
 ####for creating topics you must reach flush size 
-####create bucket of oracle-cdc in localhost:9001
-####or
+####create bucket of oracle-cdc 
 docker container exec -it mc bash
 mc alias set myminio http://minio:9000 minioadmin minioadmin
 mc mb myminio/oracle-cdc
