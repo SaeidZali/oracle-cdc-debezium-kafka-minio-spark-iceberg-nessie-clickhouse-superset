@@ -48,32 +48,6 @@ SELECT id, name, op, ts_ms
 FROM deduped
 WHERE rn = 1
 """)
-# Get the count
-count = cdc_df.count()
-# If count is less than 1000, rerun without the timestamp filter
-if count < 1000:
-    print(f"Count ({count}) is less than 1000. Rerunning without timestamp filter...")
-    cdc_df = spark.sql(f"""
-    WITH deduped AS (
-        SELECT
-            COALESCE(after.ID, before.ID) AS id,
-            COALESCE(after.NAME, before.NAME) AS name,
-            op,
-            ts_ms,
-            ROW_NUMBER() OVER (
-                PARTITION BY COALESCE(after.ID, before.ID)
-                ORDER BY ts_ms DESC
-            ) AS rn
-        FROM parquet.`s3a://oracle-cdc/topics/server1.C__DBZUSER.CUSTOMERS`
-        WHERE COALESCE(after.ID, before.ID) IS NOT NULL
-    )
-    SELECT id, name, op, ts_ms
-    FROM deduped
-    WHERE rn = 1
-    """)
-    print(f"New query returned {cdc_df.count()} rows")
-else:
-    print(f"Count ({count}) is >= 1000. Using filtered results.")
 cdc_df.createOrReplaceTempView("cdc_changes")
 last_ts_from_cdc = spark.sql(f"""
     SELECT COALESCE(MAX(ts_ms), {last_ts}) AS last_ts
