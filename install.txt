@@ -5,33 +5,8 @@
 ####refrence ---> https://download.oracle.com/otn-pub/otn_software/jdbc/23262/ojdbc8.jar
 ####refrence ---> put kafka-connect-s3-version.jar out of lib
 ####refrence ---> consider spark-defaults.conf 
-git clone https://github.com/SaeidZali/real_time_platform.git
-cd real_time_platform/
-mkdir -p connectors clickhouse/{data,logs}
-mkdir -p ./data/kafka
-sudo chmod -R 755 ./data
-#### Set permissions to 777 (most permissive)
-sudo chmod -R 777 ./data
-mkdir -p oradata
-sudo chown -R 54321:54321 oradata
-chmod 775 oradata
-mkdir -p miniodata
-chmod 777 miniodata
- ####for superset
-sudo chmod 777 ./ -R 
- ####
-mkdir -p postgres_data
-mkdir -p airflow/logs airflow/plugins
-mkdir -p ./cloudbeaver_data
-mkdir -p ./dremio/data ./dremio/logs
-chmod 777 ./dremio/data ./dremio/logs
-mkdir -p ./nessie-data
-chmod 777 ./nessie-data
-mkdir -p ./marquez/postgres
-mkdir -p ./jars
-curl -L \
-https://repo1.maven.org/maven2/io/openlineage/openlineage-spark_2.12/1.28.0/openlineage-spark_2.12-1.28.0.jar \
--o jars/openlineage-spark.jar
+chmod +x setup.sh
+./setup.sh
 ################################################
 #First go to https://container-registry.oracle.com with your account, then get new Auth token in your account profile. 
 #then in your linux server run below code :
