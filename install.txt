@@ -169,3 +169,9 @@ curl -X PUT http://localhost:8083/connectors/customers-connector/resume
 curl -X PUT http://localhost:8083/connectors/minio-s3-sink/resume
 curl -X DELETE http://localhost:8083/connectors/customers-connector
 curl -X DELETE http://localhost:8083/connectors/minio-s3-sink
+docker exec -it kafka kafka-configs \
+  --bootstrap-server kafka:9092 \
+  --entity-type topics \
+  --entity-name _schemas \
+  --alter \
+  --add-config cleanup.policy=compact
