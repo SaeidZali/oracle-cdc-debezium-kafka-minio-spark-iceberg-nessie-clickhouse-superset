@@ -5,6 +5,7 @@
 ####refrence ---> https://download.oracle.com/otn-pub/otn_software/jdbc/23262/ojdbc8.jar
 ####refrence ---> put kafka-connect-s3-version.jar out of lib
 ####refrence ---> consider spark-defaults.conf 
+git clone https://github.com/SaeidZali/real_time_platform.git
 chmod +x setup.sh
 ./setup.sh
 ################################################
