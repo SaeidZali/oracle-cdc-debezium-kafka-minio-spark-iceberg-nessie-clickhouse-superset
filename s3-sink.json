@@ -23,8 +23,12 @@
     "schema.compatibility": "NONE",
     "partitioner.class": "io.confluent.connect.storage.partitioner.DefaultPartitioner",
     "behavior.on.null.values": "ignore",
-    "flush.size": "1000",
-    "rotate.schedule.interval.ms": "5000",
-    "timezone": "UTC"
+    "timezone": "UTC",
+    "partitioner.class": "io.confluent.connect.storage.partitioner.TimeBasedPartitioner",
+    "path.format": "'year'=YYYY/'month'=MM/'day'=dd/'hour'=HH",
+    "timestamp.extractor": "Record",
+    "locale": "en-US",
+    "rotate.schedule.interval.ms": "60000",
+    "flush.size": "10000"
   }
 }
