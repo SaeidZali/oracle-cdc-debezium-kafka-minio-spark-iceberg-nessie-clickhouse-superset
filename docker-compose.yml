@@ -7,13 +7,28 @@ services:
     environment:
       ORACLE_SID: ORCLCDB
       ORACLE_PDB: ORCLPDB1
-      INIT_SGA_SIZE: 750
-      INIT_PGA_SIZE: 250
+      INIT_SGA_SIZE: 3000          # Increased from 750 (better memory allocation)
+      INIT_PGA_SIZE: 1000           # Increased from 250
       ORACLE_PWD: oraclepw
+      ORACLE_CHARACTERSET: AL32UTF8
+      # Disable less critical features for faster startup:
+      ENABLE_FORCE_LOGGING: "false"
+      ENABLE_GOLDENGATE_REPLICATION: "false"
     volumes:
       - ./oradata:/opt/oracle/oradata
     networks:
       - debezium-net
+    # Performance optimizations:
+    tmpfs:
+      - /dev/shm:rw,noexec,nosuid,size=4g    # RAM disk for faster I/O
+    shm_size: 4g                              # Shared memory (critical for Oracle)
+    ulimits:
+      memlock:
+        soft: -1                               # Unlimited memlock for performance
+        hard: -1
+      nofile:
+        soft: 65536                            # Increase file descriptor limits
+        hard: 65536
 
   kafka:
     image: confluentinc/cp-kafka:8.1.3
