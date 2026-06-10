@@ -167,3 +167,5 @@ docker exec -it kafka kafka-consumer-groups \
 # Resume both connectors
 curl -X PUT http://localhost:8083/connectors/customers-connector/resume
 curl -X PUT http://localhost:8083/connectors/minio-s3-sink/resume
+curl -X DELETE http://localhost:8083/connectors/customers-connector
+curl -X DELETE http://localhost:8083/connectors/minio-s3-sink
