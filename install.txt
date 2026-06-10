@@ -32,51 +32,8 @@ CREATE TABLESPACE logminer_tbs DATAFILE '/opt/oracle/oradata/ORCLCDB/logminer_tb
 alter session set container=ORCLPDB1;
 CREATE TABLESPACE logminer_tbs DATAFILE '/opt/oracle/oradata/ORCLCDB/ORCLPDB1/logminer_tbs.dbf' SIZE 25M REUSE AUTOEXTEND ON MAXSIZE UNLIMITED;
 exit
-docker container exec -it -e ORACLE_SID=ORCLCDB dbz_oracle19 sqlplus sys as sysdba
-################################################
-# pass is:oraclepw
-################################################
-CREATE USER c##dbzuser IDENTIFIED BY dbz DEFAULT TABLESPACE LOGMINER_TBS QUOTA UNLIMITED ON LOGMINER_TBS CONTAINER=ALL;
-GRANT CREATE SESSION TO c##dbzuser CONTAINER=ALL;
-GRANT SET CONTAINER TO c##dbzuser CONTAINER=ALL;
-GRANT SELECT ON V_$DATABASE TO c##dbzuser CONTAINER=ALL;
-GRANT FLASHBACK ANY TABLE TO c##dbzuser CONTAINER=ALL;
-GRANT SELECT ANY TABLE TO c##dbzuser CONTAINER=ALL;
-GRANT SELECT_CATALOG_ROLE TO c##dbzuser CONTAINER=ALL;
-GRANT EXECUTE_CATALOG_ROLE TO c##dbzuser CONTAINER=ALL;
-GRANT SELECT ANY TRANSACTION TO c##dbzuser CONTAINER=ALL;
-GRANT SELECT ANY DICTIONARY TO c##dbzuser CONTAINER=ALL;
-GRANT LOGMINING TO c##dbzuser CONTAINER=ALL;
-
-GRANT CREATE TABLE TO c##dbzuser CONTAINER=ALL;
-GRANT LOCK ANY TABLE TO c##dbzuser CONTAINER=ALL;
-GRANT CREATE SEQUENCE TO c##dbzuser CONTAINER=ALL;
-
-GRANT EXECUTE ON DBMS_LOGMNR TO c##dbzuser CONTAINER=ALL;
-GRANT EXECUTE ON DBMS_LOGMNR_D TO c##dbzuser CONTAINER=ALL;
-
-GRANT SELECT ON V_$LOG TO c##dbzuser CONTAINER=ALL;
-GRANT SELECT ON V_$LOG_HISTORY TO c##dbzuser CONTAINER=ALL;
-GRANT SELECT ON V_$LOGMNR_LOGS TO c##dbzuser CONTAINER=ALL;
-GRANT SELECT ON V_$LOGMNR_CONTENTS TO c##dbzuser CONTAINER=ALL;
-GRANT SELECT ON V_$LOGMNR_PARAMETERS TO c##dbzuser CONTAINER=ALL;
-GRANT SELECT ON V_$LOGFILE TO c##dbzuser CONTAINER=ALL;
-GRANT SELECT ON V_$ARCHIVED_LOG TO c##dbzuser CONTAINER=ALL;
-GRANT SELECT ON V_$ARCHIVE_DEST_STATUS TO c##dbzuser CONTAINER=ALL;
-GRANT SELECT ON V_$TRANSACTION TO c##dbzuser CONTAINER=ALL;
-exit
-docker exec -it -e ORACLE_SID=ORCLPDB1 dbz_oracle19 sqlplus c##dbzuser@ORCLPDB1;
-################################################
-# pass is:dbz
-################################################
-CREATE TABLE customers (id number(9,0) primary key, name varchar2(50));
-INSERT INTO customers VALUES (1001, 'Salles Thomas');
-INSERT INTO customers VALUES (1002, 'George Bailey');
-INSERT INTO customers VALUES (1003, 'Edward Walker');
-INSERT INTO customers VALUES (1004, 'Anne Kretchmar');
-COMMIT;
-ALTER TABLE customers ADD SUPPLEMENTAL LOG DATA (ALL) COLUMNS;
-exit
+chmod +x run_oracle_setup.sh
+./run_oracle_setup.sh
 docker exec connect curl -s http://localhost:8083/connectors | jq
 ####for creating topics you must reach flush size 
 ####create bucket of oracle-cdc in localhost:9001
