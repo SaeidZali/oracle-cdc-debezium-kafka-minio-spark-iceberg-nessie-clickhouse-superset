@@ -5,6 +5,7 @@
 ####refrence ---> https://download.oracle.com/otn-pub/otn_software/jdbc/23262/ojdbc8.jar
 ####refrence ---> put kafka-connect-s3-version.jar out of lib
 ####refrence ---> consider spark-defaults.conf 
+docker exec connect curl -s http://localhost:8083/connectors | jq
 docker exec -it connect kafka-avro-console-consumer \
   --bootstrap-server kafka:9092 \
   --topic server1.C__DBZUSER.CUSTOMERS \
