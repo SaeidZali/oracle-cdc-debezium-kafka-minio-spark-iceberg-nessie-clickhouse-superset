@@ -50,8 +50,6 @@ curl --noproxy '*' -i -X POST \
   http://localhost:8083/connectors \
   -d @s3-sink.json
 -----------------------------------------------
-docker exec spark-iceberg aws --endpoint-url http://minio:9000 s3 ls s3://oracle-cdc/
------------------------------------------------
 ####in airflow ui you can see dag
 ####in localhost:8080 in superset connect to clickhouse and create dashboard
 ####in dremio 
