@@ -44,7 +44,7 @@ WITH deduped AS (
     WHERE COALESCE(after.ID, before.ID) IS NOT NULL
       AND ts_ms > {last_ts}
 )
-SELECT id, name, op
+SELECT id, name, op,ts_ms,
 FROM deduped
 WHERE rn = 1
 """)
