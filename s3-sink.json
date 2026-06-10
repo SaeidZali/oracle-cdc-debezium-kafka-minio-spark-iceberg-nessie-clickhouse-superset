@@ -23,8 +23,6 @@
     "schema.compatibility": "NONE",
     "partitioner.class": "io.confluent.connect.storage.partitioner.DefaultPartitioner",
     "behavior.on.null.values": "ignore",
-    "flush.size": "1000",
-    "rotate.schedule.interval.ms": "10000",
-    "timezone": "UTC"
+    "flush.size": "1000"
   }
 }
