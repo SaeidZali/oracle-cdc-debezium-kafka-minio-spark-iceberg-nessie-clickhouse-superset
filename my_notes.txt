@@ -11,3 +11,4 @@ docker exec -it connect kafka-avro-console-consumer \
   --from-beginning \
   --property print.key=true \
   --property schema.registry.url=http://schema-registry:8081
+docker exec spark-iceberg aws --endpoint-url http://minio:9000 s3 ls s3://oracle-cdc/
