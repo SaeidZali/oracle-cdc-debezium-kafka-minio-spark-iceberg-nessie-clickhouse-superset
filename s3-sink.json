@@ -31,6 +31,7 @@
 
     "flush.size": "500",
     "rotate.interval.ms": "30000",
-    "rotate.schedule.interval.ms": "60000"
+    "rotate.schedule.interval.ms": "60000",
+    "partition.duration.ms": "3600000"
   }
 }
