@@ -5,8 +5,6 @@ sudo chmod -R 755 ./data && sudo chmod -R 777 ./data && sudo chown -R 54321:5432
 curl -L \
 https://repo1.maven.org/maven2/io/openlineage/openlineage-spark_2.12/1.28.0/openlineage-spark_2.12-1.28.0.jar \
 -o jars/openlineage-spark.jar
-chmod +x setup.sh
-./setup.sh
 ################################################
 #First go to https://container-registry.oracle.com with your account, then get new Auth token in your account profile. 
 #then in your linux server run below code :
