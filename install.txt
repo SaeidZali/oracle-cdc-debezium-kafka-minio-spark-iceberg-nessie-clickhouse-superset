@@ -1,4 +1,5 @@
 git clone https://github.com/SaeidZali/real_time_platform.git
+cd real_time_platform/
 chmod +x setup.sh
 ./setup.sh
 ################################################
