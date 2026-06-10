@@ -1,6 +1,7 @@
 git clone https://github.com/SaeidZali/real_time_platform.git
 cd real_time_platform/
 mkdir -p connectors clickhouse/{data,logs} ./data/kafka oradata miniodata postgres_data airflow/logs airflow/plugins ./cloudbeaver_data ./dremio/data ./dremio/logs ./nessie-data ./marquez/postgres ./jars
+sudo chmod -R 755 ./data && sudo chmod -R 777 ./data && sudo chown -R 54321:54321 oradata && chmod 775 oradata && chmod 777 miniodata && sudo chmod 777 ./ -R && chmod 777 ./dremio/data ./dremio/logs && chmod 777 ./nessie-data
 chmod +x setup.sh
 ./setup.sh
 ################################################
