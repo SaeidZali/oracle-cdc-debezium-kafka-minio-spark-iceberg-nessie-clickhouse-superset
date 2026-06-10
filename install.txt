@@ -32,7 +32,6 @@ CREATE TABLESPACE logminer_tbs DATAFILE '/opt/oracle/oradata/ORCLCDB/ORCLPDB1/lo
 exit
 chmod +x run_oracle_setup.sh
 ./run_oracle_setup.sh
-docker exec connect curl -s http://localhost:8083/connectors | jq
 ####for creating topics you must reach flush size 
 ####create bucket of oracle-cdc 
 docker container exec -it mc bash
