@@ -35,13 +35,11 @@ check_success() {
 # Main script
 print_status "Starting setup of real_time_platform..."
 
-# Clone repository
+# Check if we're already in the correct directory or need to create it
 if [ ! -d "real_time_platform" ]; then
-    print_status "Cloning repository..."
-    git clone https://github.com/SaeidZali/real_time_platform.git
-    check_success "Git clone"
-else
-    print_warning "Directory real_time_platform already exists, skipping clone"
+    print_status "Creating real_time_platform directory..."
+    mkdir -p real_time_platform
+    check_success "Directory creation"
 fi
 
 # Enter directory
