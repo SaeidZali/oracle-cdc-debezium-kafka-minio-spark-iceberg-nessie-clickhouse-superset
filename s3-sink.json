@@ -24,8 +24,8 @@
     "partitioner.class": "io.confluent.connect.storage.partitioner.DefaultPartitioner",
     "behavior.on.null.values": "ignore",
     "flush.size": "1000",
-    "rotate.interval.ms": "1000",
-    "rotate.schedule.interval.ms": "5000",
+    "rotate.interval.ms": "-1",
+    "rotate.schedule.interval.ms": "10000",
     "timezone": "UTC"
   }
 }
