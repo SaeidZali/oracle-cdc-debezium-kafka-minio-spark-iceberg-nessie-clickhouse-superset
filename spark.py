@@ -49,8 +49,8 @@ FROM deduped
 WHERE rn = 1
 """)
 cdc_df.createOrReplaceTempView("cdc_changes")
-last_ts_from_cdc = spark.sql("""
-    SELECT COALESCE(MAX(ts_ms), 0) AS last_ts
+last_ts_from_cdc = spark.sql(f"""
+    SELECT COALESCE(MAX(ts_ms), {last_ts}) AS last_ts
     FROM cdc_changes
 """).first()[0]
 spark.sql(f"""
