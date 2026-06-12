@@ -420,6 +420,26 @@ services:
       WEB_PORT: 3000
     networks:
       - debezium-net
+    # Debezium UI - Web interface for managing Debezium connectors
+  debezium-ui:
+    image: debezium/debezium-ui:latest
+    container_name: debezium-ui
+    ports:
+      - "8085:8080"
+    environment:
+      KAFKA_CONNECT_URIS: http://connect:8083
+    depends_on:
+      - connect
+      - kafka
+    networks:
+      - debezium-net
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
 
 networks:
   debezium-net:
