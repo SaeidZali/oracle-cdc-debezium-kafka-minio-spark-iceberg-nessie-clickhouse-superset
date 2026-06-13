@@ -9,7 +9,7 @@
     "aws.access.key.id": "minioadmin",
     "aws.secret.access.key": "minioadmin",
     "s3.path.style.access.enabled": "true",
-    "flush.size": "3",
+    "flush.size": "1000",
     "rotate.interval.ms": "60000",
     "topics": "CUSTOMERS_TO_S3",
     "storage.class": "io.confluent.connect.s3.storage.S3Storage",
