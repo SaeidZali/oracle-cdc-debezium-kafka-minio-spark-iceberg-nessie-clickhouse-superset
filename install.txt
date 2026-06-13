@@ -74,4 +74,4 @@ curl -X POST http://localhost:8083/connectors \
 docker exec -i ksqldb-server ksql http://localhost:8088 < cdc_pipeline.sql
 compare SELECT COUNT(*) FROM C##DBZUSER.CUSTOMERS; in oracle with 
 docker exec -i ksqldb-server ksql http://localhost:8088
-SELECT COUNT(*) FROM CUSTOMERS_CURRENT EMIT CHANGES
+SELECT COUNT(*) FROM CUSTOMERS_CURRENT EMIT CHANGES;
