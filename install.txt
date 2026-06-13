@@ -73,3 +73,4 @@ curl -X POST http://localhost:8083/connectors \
   -d @customers_to_s3.json
 docker exec -it ksqldb-server bash
 ksql http://localhost:8088
+docker exec -i ksqldb-server ksql http://localhost:8088 < cdc_pipeline.sql
