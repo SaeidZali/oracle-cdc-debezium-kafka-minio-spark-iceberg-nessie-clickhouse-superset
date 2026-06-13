@@ -18,17 +18,6 @@ services:
       - ./oradata:/opt/oracle/oradata
     networks:
       - debezium-net
-    # Performance optimizations:
-    tmpfs:
-      - /dev/shm:rw,noexec,nosuid,size=4g    # RAM disk for faster I/O
-    shm_size: 4g                              # Shared memory (critical for Oracle)
-    ulimits:
-      memlock:
-        soft: -1                               # Unlimited memlock for performance
-        hard: -1
-      nofile:
-        soft: 65536                            # Increase file descriptor limits
-        hard: 65536
 
   kafka:
     image: confluentinc/cp-kafka:8.1.3
