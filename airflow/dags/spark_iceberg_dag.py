@@ -26,7 +26,7 @@ with DAG(
 
     run_spark_job = BashOperator(
         task_id='run_spark_job',
-        bash_command='docker exec spark-iceberg spark-submit --verbose /opt/spark/spark.py'
+        bash_command='docker exec spark-iceberg spark-submit --verbose /opt/spark/spark_batch.py'
     )
 
     run_spark_job
