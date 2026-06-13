@@ -55,7 +55,7 @@ curl --noproxy '*' -i -X POST \
 ####in airflow ui you can see dag
 ####in localhost:8080 in superset connect to clickhouse and create dashboard
 ####in dremio 
-####add source nessie
+####add source ;
 ####in general tab
 ####Nessie endpoint URL http://nessie:19120/api/v2
 ####Authentication type = None
@@ -72,3 +72,6 @@ curl -X POST http://localhost:8083/connectors \
   -H "Content-Type: application/json" \
   -d @customers_to_s3.json
 docker exec -i ksqldb-server ksql http://localhost:8088 < cdc_pipeline.sql
+compare SELECT COUNT(*) FROM C##DBZUSER.CUSTOMERS; in oracle with 
+docker exec -i ksqldb-server ksql http://localhost:8088
+SELECT COUNT(*) FROM CUSTOMERS_CURRENT EMIT CHANGES
