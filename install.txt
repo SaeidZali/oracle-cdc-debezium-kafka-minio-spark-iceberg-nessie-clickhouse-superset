@@ -71,3 +71,5 @@ curl --noproxy '*' -i -X POST \
 curl -X POST http://localhost:8083/connectors \
   -H "Content-Type: application/json" \
   -d @customers_to_s3.json
+docker exec -it ksqldb-server bash
+ksql http://localhost:8088
