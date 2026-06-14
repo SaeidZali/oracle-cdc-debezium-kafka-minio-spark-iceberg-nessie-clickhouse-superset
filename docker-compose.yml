@@ -162,7 +162,6 @@ services:
       - ./notebooks:/home/iceberg/notebooks/notebooks
       - ./spark/conf/spark-defaults.conf:/opt/spark/conf/spark-defaults.conf
       - ./spark_batch.py:/opt/spark/spark_batch.py
-      - ./spark_streaming.py:/opt/spark/spark_streaming.py
       - ./jars/openlineage-spark.jar:/opt/spark/jars/openlineage-spark.jar
     environment:
       - AWS_ACCESS_KEY_ID=minioadmin
@@ -430,6 +429,39 @@ services:
       timeout: 10s
       retries: 5
       start_period: 40s
+
+  oracle-cdc-stream:
+    build:
+      context: .
+      dockerfile: Dockerfile.spark-stream
+    container_name: oracle-cdc-stream
+    networks:
+      - debezium-net
+
+    depends_on:
+      - minio
+      - nessie
+      - clickhouse
+      - connect
+
+    volumes:
+      - ./warehouse:/home/iceberg/warehouse
+      - ./spark/conf/spark-defaults.conf:/opt/spark/conf/spark-defaults.conf
+      - ./jars/openlineage-spark.jar:/opt/spark/jars/openlineage-spark.jar
+
+    environment:
+      AWS_ACCESS_KEY_ID: minioadmin
+      AWS_SECRET_ACCESS_KEY: minioadmin
+      AWS_REGION: us-east-1
+      PYSPARK_PYTHON: python3
+
+    restart: unless-stopped
+
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "5"
 
 networks:
   debezium-net:
