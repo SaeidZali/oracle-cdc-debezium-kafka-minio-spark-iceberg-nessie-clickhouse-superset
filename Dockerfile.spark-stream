@@ -1,0 +1,9 @@
+FROM tabulario/spark-iceberg
+
+USER root
+
+RUN pip install --no-cache-dir clickhouse-connect
+
+COPY spark_streaming.py /opt/spark/spark_streaming.py
+
+CMD ["/opt/spark/bin/spark-submit", "/opt/spark/spark_streaming.py"]
